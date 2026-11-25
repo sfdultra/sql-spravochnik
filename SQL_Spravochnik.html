@@ -1,0 +1,2588 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#2563eb">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>SQL: основы — справочник, флипкарты, тест</title>
+<script>try{var t=JSON.parse(localStorage.getItem("sql-theme"))}catch(e){}document.documentElement.setAttribute("data-theme",t||(window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"))</script>
+<style>
+  :root {
+    --bg: #f7f8fa;
+    --surface: #ffffff;
+    --surface-2: #eef1f5;
+    --text: #1c2430;
+    --text-muted: #5b6b7c;
+    --border: #d8dee6;
+    --accent: #2563eb;
+    --accent-soft: #dbe6ff;
+    --code-bg: #f0f3f7;
+    --pre-bg: #f4f6f9;
+    --shadow: 0 1px 3px rgba(0,0,0,.08), 0 8px 24px rgba(0,0,0,.04);
+    --blue: #2563eb; --green: #16a34a; --purple: #9333ea; --orange: #ea8a0c;
+    --teal: #0d9488; --red: #dc2626; --pink: #db2777; --gray: #64748b;
+    --ok: #16a34a; --ok-bg: rgba(22,163,74,.1);
+    --bad: #dc2626; --bad-bg: rgba(220,38,38,.08);
+    --neg-bg: rgba(239,68,68,.07);
+    --neg-border: rgba(239,68,68,.35);
+    --qa-bg: rgba(37,99,235,.07);
+    --tip-bg: #1c2430;
+    --tip-text: #f1f5f9;
+    --tip-muted: #b6c2d1;
+    --abbr-line: rgba(37,99,235,.55);
+    --hot: rgba(245,158,11,.12);
+    --hl-kw: #a626a4; --hl-str: #50a14f; --hl-num: #b76b01; --hl-com: #8a94a3;
+    --hl-fn: #4078f2; --hl-bi: #0184bc; --hl-dec: #c18401; --hl-self: #e45649;
+  }
+  [data-theme="dark"] {
+    --bg: #0f141b;
+    --surface: #161d27;
+    --surface-2: #1d2633;
+    --text: #e6ebf2;
+    --text-muted: #94a3b3;
+    --border: #2a3543;
+    --accent: #60a5fa;
+    --accent-soft: #1e2f4d;
+    --code-bg: #1b2431;
+    --pre-bg: #121922;
+    --shadow: 0 1px 3px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.3);
+    --blue: #60a5fa; --green: #4ade80; --purple: #c084fc; --orange: #fbbf24;
+    --teal: #2dd4bf; --red: #f87171; --pink: #f472b6; --gray: #94a3b8;
+    --ok: #4ade80; --ok-bg: rgba(74,222,128,.12);
+    --bad: #f87171; --bad-bg: rgba(248,113,113,.12);
+    --neg-bg: rgba(248,113,113,.1);
+    --neg-border: rgba(248,113,113,.4);
+    --qa-bg: rgba(96,165,250,.1);
+    --tip-bg: #f1f5f9;
+    --tip-text: #0f141b;
+    --tip-muted: #475569;
+    --abbr-line: rgba(96,165,250,.6);
+    --hot: rgba(251,191,36,.1);
+    --hl-kw: #c678dd; --hl-str: #98c379; --hl-num: #d19a66; --hl-com: #6b7686;
+    --hl-fn: #61afef; --hl-bi: #56b6c2; --hl-dec: #e5c07b; --hl-self: #e06c75;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.55;
+  }
+  html.ready body { transition: background .25s ease, color .25s ease; }
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 28px 16px 80px; }
+
+  header.top { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 8px; }
+  h1 { font-size: 1.55rem; margin: 0; letter-spacing: -0.02em; }
+  .subtitle { color: var(--text-muted); font-size: .92rem; margin: 4px 0 18px; }
+
+  .theme-toggle {
+    display: inline-flex; align-items: center; gap: 8px;
+    border: 1px solid var(--border); background: var(--surface); color: var(--text);
+    padding: 8px 14px; border-radius: 999px; cursor: pointer;
+    font-size: .88rem; font-weight: 500; box-shadow: var(--shadow);
+  }
+  .theme-toggle:hover { border-color: var(--accent); }
+
+  /* --- Вкладки --- */
+  .tabs { display: flex; gap: 4px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 4px; margin-bottom: 18px; box-shadow: var(--shadow); }
+  .tab {
+    flex: 1; border: 0; background: transparent; color: var(--text-muted); cursor: pointer;
+    padding: 9px 12px; border-radius: 9px; font-size: .92rem; font-weight: 600;
+    display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  }
+  .tab:hover { color: var(--text); background: var(--surface-2); }
+  .tab.active { background: var(--accent); color: #fff; }
+  [data-theme="dark"] .tab.active { color: #0b1220; }
+  .tab .ico { font-size: 1.05rem; }
+  .view { display: none; }
+  .view.active { display: block; }
+
+  .controls { display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; align-items: center; }
+  .mini-btn {
+    border: 1px solid var(--border); background: var(--surface); color: var(--text);
+    padding: 6px 13px; border-radius: 8px; cursor: pointer; font-size: .82rem; font-weight: 500;
+  }
+  .mini-btn:hover { border-color: var(--accent); background: var(--surface-2); }
+  .mini-btn.on { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+  .controls .hint { font-size: .8rem; color: var(--text-muted); margin-left: auto; }
+  .ref-search { flex: 1; min-width: 200px; }
+
+  .toc { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+  .toc a {
+    font-size: .8rem; text-decoration: none; color: var(--text); background: var(--surface);
+    border: 1px solid var(--border); padding: 4px 10px; border-radius: 999px;
+  }
+  .toc a:hover { border-color: var(--accent); color: var(--accent); }
+
+  details.section {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    margin-bottom: 12px; box-shadow: var(--shadow); overflow: hidden; scroll-margin-top: 12px;
+  }
+  details.section > summary {
+    list-style: none; cursor: pointer; padding: 14px 18px; font-weight: 600;
+    display: flex; align-items: center; gap: 12px; user-select: none;
+  }
+  details.section > summary::-webkit-details-marker { display: none; }
+  details.section > summary:hover { background: var(--surface-2); }
+  details.section > summary .chev { margin-left: auto; transition: transform .2s ease; color: var(--text-muted); font-size: .8rem; }
+  details.section[open] > summary .chev { transform: rotate(90deg); }
+  details.section details.section { box-shadow: none; margin: 12px 0 10px; background: var(--surface-2); }
+  details.section details.section > summary { padding: 11px 14px; }
+  details.section.hidden-by-search { display: none; }
+
+  .badge {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: .76rem; font-weight: 700; padding: 3px 9px; border-radius: 6px;
+    color: #fff; letter-spacing: .02em; flex-shrink: 0; min-width: 38px; text-align: center;
+  }
+  [data-theme="dark"] .badge { color: #0b1220; }
+  .b-blue { background: var(--blue); } .b-green { background: var(--green); } .b-purple { background: var(--purple); }
+  .b-orange { background: var(--orange); } .b-teal { background: var(--teal); } .b-red { background: var(--red); }
+  .b-pink { background: var(--pink); } .b-gray { background: var(--gray); }
+
+  .section-body { padding: 4px 18px 18px; border-top: 1px solid var(--border); }
+  .section-body p.note { color: var(--text-muted); font-size: .9rem; margin: 12px 0; }
+  h3.sub { font-size: 1rem; margin: 22px 0 6px; }
+  h3.sub:first-child { margin-top: 14px; }
+
+  ol.checks, ul.checks { margin: 12px 0 0; padding-left: 22px; }
+  ol.checks li, ul.checks li { margin-bottom: 8px; padding-left: 4px; }
+  ol.checks li::marker { color: var(--accent); font-weight: 600; }
+
+  .neg-block {
+    margin-top: 14px; background: var(--neg-bg); border: 1px solid var(--neg-border);
+    border-left: 3px solid var(--red); border-radius: 10px; padding: 10px 14px 12px;
+  }
+  .neg-block .neg-title, .qa-block .qa-title { font-size: .82rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; margin: 0 0 8px; }
+  .neg-block .neg-title { color: var(--red); }
+  .neg-block ol { margin: 0; padding-left: 20px; }
+  .neg-block ol li { margin-bottom: 7px; }
+  .neg-block pre { margin-bottom: 0; }
+  .qa-block {
+    margin-top: 14px; background: var(--qa-bg); border: 1px solid var(--border);
+    border-left: 3px solid var(--accent); border-radius: 10px; padding: 10px 14px 12px; font-size: .9rem;
+  }
+  .qa-block .qa-title { color: var(--accent); }
+  .qa-block ul { margin: 0; padding-left: 20px; }
+  .qa-block li { margin-bottom: 6px; }
+
+  .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+  .tags span { font-size: .84rem; background: var(--surface-2); border: 1px solid var(--border); padding: 5px 11px; border-radius: 999px; }
+
+  code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: .85em; background: var(--code-bg); padding: 2px 6px; border-radius: 5px;
+    border: 1px solid var(--border); overflow-wrap: anywhere;
+  }
+  pre {
+    position: relative; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: .82rem; line-height: 1.55; background: var(--pre-bg); border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px 14px; overflow-x: auto; margin: 10px 0; tab-size: 4;
+    -webkit-overflow-scrolling: touch;
+  }
+  pre code { background: none; border: 0; padding: 0; font-size: inherit; }
+  .copy-btn {
+    position: absolute; top: 6px; right: 6px; font-size: .72rem; padding: 3px 8px; border-radius: 6px;
+    border: 1px solid var(--border); background: var(--surface); color: var(--text-muted); cursor: pointer; opacity: 0;
+    transition: opacity .15s;
+  }
+  pre:hover .copy-btn, .copy-btn:focus { opacity: 1; }
+  .hl-kw { color: var(--hl-kw); font-weight: 600; } .hl-str { color: var(--hl-str); } .hl-num { color: var(--hl-num); }
+  .hl-com { color: var(--hl-com); font-style: italic; } .hl-fn { color: var(--hl-fn); } .hl-bi { color: var(--hl-bi); }
+  .hl-dec { color: var(--hl-dec); } .hl-self { color: var(--hl-self); }
+
+  /* --- Подсказки --- */
+  abbr.t { text-decoration: none; border-bottom: 1px dotted var(--abbr-line); cursor: help; }
+  abbr.t:hover, abbr.t:focus { border-bottom-style: solid; outline: none; background: var(--accent-soft); border-radius: 3px; }
+  code abbr.t { border-bottom: 0; }
+  code:has(abbr.t) { border-bottom: 1px dotted var(--abbr-line); }
+  #tip {
+    position: fixed; z-index: 1000; max-width: 360px;
+    background: var(--tip-bg); color: var(--tip-text);
+    border-radius: 10px; padding: 10px 12px; font-size: .84rem; line-height: 1.45;
+    box-shadow: 0 10px 30px rgba(0,0,0,.25);
+    pointer-events: none; opacity: 0; transform: translateY(4px);
+    transition: opacity .12s ease, transform .12s ease;
+  }
+  #tip.show { opacity: 1; transform: translateY(0); }
+  #tip .tip-term { font-weight: 700; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  #tip .tip-full { font-weight: 600; margin-bottom: 4px; }
+  #tip .tip-why { opacity: .92; }
+  #tip pre { background: rgba(127,127,127,.15); border: 0; color: inherit; margin: 6px 0 0; padding: 7px 9px; font-size: .78rem; }
+
+  /* --- Таблицы --- */
+  .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .tbl { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: .88rem; }
+  .tbl th, .tbl td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .tbl th { color: var(--text-muted); font-weight: 600; font-size: .78rem; text-transform: uppercase; letter-spacing: .03em; }
+  .tbl tr:last-child td { border-bottom: none; }
+  .tbl tbody tr:hover td { background: var(--surface-2); }
+  .tbl tr.hot td { background: var(--hot); }
+  .tbl tr.hot td:first-child::after { content: " ★"; color: var(--orange); font-size: .8em; }
+  .yes { color: var(--ok); font-weight: 600; } .no { color: var(--bad); font-weight: 600; } .mid { color: var(--orange); font-weight: 600; }
+  .legend-hot { font-size: .8rem; color: var(--text-muted); margin: 10px 0 0; }
+
+  .vs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; margin-top: 14px; }
+  .vs-card { background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; font-size: .88rem; }
+  .vs-card h4 { margin: 0 0 6px; font-size: .95rem; }
+  .vs-card p { margin: 0 0 6px; color: var(--text-muted); }
+  .vs-card p:last-child { margin-bottom: 0; }
+
+  .gloss-search {
+    width: 100%; margin-top: 4px; padding: 9px 12px; border-radius: 8px;
+    border: 1px solid var(--border); background: var(--surface); color: var(--text); font-size: .9rem;
+  }
+  .gloss-search:focus { outline: 2px solid var(--accent); border-color: transparent; }
+  .gloss-table td:first-child { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-weight: 700; white-space: nowrap; }
+  .gloss-table td pre { margin: 6px 0 0; font-size: .76rem; padding: 7px 10px; }
+  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow); padding: 16px 18px; }
+  .empty { color: var(--text-muted); text-align: center; padding: 30px 10px; }
+
+  /* --- Флипкарты --- */
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .chip {
+    border: 1px solid var(--border); background: var(--surface); color: var(--text); cursor: pointer;
+    padding: 6px 12px; border-radius: 999px; font-size: .84rem; font-weight: 500;
+  }
+  .chip .n { color: var(--text-muted); font-size: .78em; margin-left: 4px; }
+  .chip.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .chip.on .n { color: rgba(255,255,255,.8); }
+  [data-theme="dark"] .chip.on { color: #0b1220; }
+  [data-theme="dark"] .chip.on .n { color: rgba(11,18,32,.7); }
+
+  .fc-stats { display: flex; align-items: center; gap: 12px; font-size: .86rem; color: var(--text-muted); margin-bottom: 10px; flex-wrap: wrap; }
+  .bar { flex: 1; min-width: 120px; height: 6px; background: var(--surface-2); border-radius: 99px; overflow: hidden; border: 1px solid var(--border); }
+  .bar > i { display: block; height: 100%; background: var(--ok); width: 0; transition: width .3s; }
+
+  .fc-stage { perspective: 1400px; margin: 6px auto 14px; max-width: 640px; touch-action: pan-y; }
+  .fc-drag { position: relative; }
+  .fc-card {
+    position: relative; display: grid; width: 100%; min-height: 300px; cursor: pointer; outline: none;
+    transform-style: preserve-3d; transition: transform .45s cubic-bezier(.2,.7,.2,1);
+  }
+  .fc-card.flipped { transform: rotateY(180deg); }
+  .fc-card.dragging { transition: none; }
+  .fc-face {
+    grid-area: 1 / 1; position: relative; backface-visibility: hidden; -webkit-backface-visibility: hidden;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow);
+    padding: 22px 24px; display: flex; flex-direction: column; overflow: auto;
+  }
+  .fc-back { transform: rotateY(180deg); background: var(--surface); border-color: var(--accent); }
+  .fc-cat { font-size: .74rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--accent); display: flex; justify-content: space-between; gap: 8px; }
+  .fc-cat .known-mark { color: var(--ok); }
+  .fc-text { flex: 1; display: flex; flex-direction: column; justify-content: center; font-size: 1.22rem; font-weight: 600; text-align: center; padding: 12px 0; }
+  .fc-back .fc-text { font-size: 1.02rem; font-weight: 400; text-align: left; line-height: 1.6; }
+  .fc-text pre { text-align: left; font-size: .84rem; }
+  .fc-hint { font-size: .78rem; color: var(--text-muted); text-align: center; }
+  .fc-swipe { position: absolute; top: 14px; font-size: .82rem; font-weight: 800; padding: 4px 10px; border-radius: 8px; opacity: 0; pointer-events: none; z-index: 2; border: 2px solid; }
+  .fc-swipe.l { left: 14px; color: var(--bad); border-color: var(--bad); transform: rotate(-8deg); }
+  .fc-swipe.r { right: 14px; color: var(--ok); border-color: var(--ok); transform: rotate(8deg); }
+
+  .fc-actions { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+  .btn {
+    border: 1px solid var(--border); background: var(--surface); color: var(--text); cursor: pointer;
+    padding: 10px 18px; border-radius: 10px; font-size: .92rem; font-weight: 600; box-shadow: var(--shadow);
+    display: inline-flex; align-items: center; gap: 6px; justify-content: center;
+  }
+  .btn:hover { border-color: var(--accent); }
+  .btn:disabled { opacity: .45; cursor: default; }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  [data-theme="dark"] .btn.primary { color: #0b1220; }
+  .btn.good { color: var(--ok); border-color: var(--ok); background: var(--ok-bg); }
+  .btn.bad { color: var(--bad); border-color: var(--bad); background: var(--bad-bg); }
+  .kbd-hint { text-align: center; font-size: .78rem; color: var(--text-muted); margin-top: 12px; }
+  kbd { font-family: ui-monospace, Menlo, monospace; font-size: .75rem; border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 4px; padding: 0 5px; background: var(--surface); }
+
+  /* --- Тест --- */
+  .qz-setup h3 { margin: 0 0 8px; font-size: 1rem; }
+  .qz-setup .row { margin-bottom: 16px; }
+  .qz-best { font-size: .86rem; color: var(--text-muted); margin-top: 10px; }
+  .qz-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: .86rem; color: var(--text-muted); margin-bottom: 8px; }
+  .qz-bar { height: 6px; background: var(--surface-2); border-radius: 99px; overflow: hidden; margin-bottom: 16px; border: 1px solid var(--border); }
+  .qz-bar > i { display: block; height: 100%; background: var(--accent); transition: width .3s; }
+  .qz-topic { display: inline-block; font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--accent); margin-bottom: 6px; }
+  .qz-q { font-size: 1.12rem; font-weight: 600; margin: 0 0 8px; }
+  .qz-opts { display: grid; gap: 8px; margin-top: 14px; }
+  .qz-opt {
+    text-align: left; border: 1px solid var(--border); background: var(--surface); color: var(--text); cursor: pointer;
+    padding: 11px 14px; border-radius: 10px; font-size: .95rem; display: flex; gap: 10px; align-items: flex-start;
+    font-family: inherit;
+  }
+  .qz-opt:hover:not(:disabled) { border-color: var(--accent); background: var(--surface-2); }
+  .qz-opt .k { font-family: ui-monospace, Menlo, monospace; font-size: .8rem; color: var(--text-muted); border: 1px solid var(--border); border-radius: 5px; padding: 0 6px; flex-shrink: 0; margin-top: 2px; }
+  .qz-opt .v { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .9rem; white-space: pre-wrap; word-break: break-word; }
+  .qz-opt .v.plain { font-family: inherit; font-size: .95rem; }
+  .qz-opt:disabled { cursor: default; }
+  .qz-opt.correct { border-color: var(--ok); background: var(--ok-bg); }
+  .qz-opt.wrong { border-color: var(--bad); background: var(--bad-bg); }
+  .qz-opt.dim { opacity: .55; }
+  .qz-ex { margin-top: 14px; border-radius: 10px; padding: 10px 14px; font-size: .92rem; border: 1px solid var(--border); border-left: 3px solid var(--ok); background: var(--ok-bg); }
+  .qz-ex.bad { border-left-color: var(--bad); background: var(--bad-bg); }
+  .qz-ex b { display: block; margin-bottom: 2px; }
+  .qz-nav { display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px; }
+  .qz-score { text-align: center; padding: 10px 0 6px; }
+  .qz-score .big { font-size: 3rem; font-weight: 800; line-height: 1; }
+  .qz-score .msg { color: var(--text-muted); margin-top: 6px; }
+  .qz-topics { display: grid; gap: 6px; margin: 16px 0; }
+  .qz-topics .r { display: grid; grid-template-columns: 110px 1fr 54px; gap: 10px; align-items: center; font-size: .86rem; }
+  .qz-topics .r .bar > i { background: var(--accent); }
+  .qz-mistakes h3 { font-size: 1rem; margin: 18px 0 8px; }
+  .qz-mist { border: 1px solid var(--border); border-left: 3px solid var(--bad); border-radius: 10px; padding: 10px 14px; margin-bottom: 8px; font-size: .9rem; background: var(--surface); }
+  .qz-mist .your { color: var(--bad); } .qz-mist .right { color: var(--ok); }
+  .qz-mist pre { font-size: .78rem; }
+  .center-actions { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+
+  footer { margin-top: 48px; text-align: center; color: var(--text-muted); font-size: .82rem; }
+  mark.hit { background: rgba(250,204,21,.45); color: inherit; border-radius: 3px; padding: 0 1px; }
+
+  @media (max-width: 600px) {
+    .section-body { padding: 4px 12px 14px; }
+    details.section > summary { padding: 12px 12px; gap: 8px; font-size: .95rem; }
+    .controls .hint { margin-left: 0; width: 100%; }
+    .tab .lbl { font-size: .82rem; }
+  }
+
+  /* ===== Мобильная версия ===== */
+  html { -webkit-text-size-adjust: 100%; }
+  body.mobile { -webkit-tap-highlight-color: transparent; overscroll-behavior-y: contain; }
+  body.mobile .wrap { padding: 0 12px calc(86px + env(safe-area-inset-bottom)); }
+
+  body.mobile header.top {
+    position: sticky; top: 0; z-index: 50; margin: 0 -12px 10px; padding: calc(10px + env(safe-area-inset-top)) 14px 10px;
+    background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border); flex-wrap: nowrap;
+  }
+  body.mobile h1 { font-size: 1.08rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  body.mobile .theme-toggle { padding: 7px 10px; box-shadow: none; }
+  body.mobile #themeLabel { display: none; }
+  body.mobile .subtitle { font-size: .82rem; margin: 0 0 12px; }
+
+  /* Нижняя панель вкладок */
+  body.mobile .tabs {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 60; margin: 0; border-radius: 0;
+    border-width: 1px 0 0; padding: 6px 6px calc(6px + env(safe-area-inset-bottom)); gap: 2px;
+    background: color-mix(in srgb, var(--surface) 92%, transparent); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 -4px 20px rgba(0,0,0,.06);
+  }
+  body.mobile .tab { flex-direction: column; gap: 2px; padding: 6px 4px; border-radius: 10px; font-size: .7rem; min-height: 50px; }
+  body.mobile .tab .ico { font-size: 1.3rem; }
+  body.mobile .tab .lbl { font-size: .7rem; }
+  body.mobile .tab.active { background: var(--accent-soft); color: var(--accent); }
+
+  body.mobile .controls { gap: 8px; margin-bottom: 10px; }
+  body.mobile .controls .hint { font-size: .74rem; }
+  body.mobile .ref-search { min-width: 100%; order: -1; font-size: 16px; padding: 11px 12px; }
+  body.mobile .gloss-search { font-size: 16px; padding: 11px 12px; }
+  body.mobile .mini-btn { padding: 8px 12px; font-size: .82rem; }
+
+  body.mobile .toc { flex-wrap: nowrap; overflow-x: auto; margin: 0 -12px 12px; padding: 0 12px 4px; scrollbar-width: none; }
+  body.mobile .toc::-webkit-scrollbar { display: none; }
+  body.mobile .toc a { white-space: nowrap; padding: 7px 12px; font-size: .82rem; }
+
+  body.mobile details.section { border-radius: 14px; scroll-margin-top: 70px; }
+  body.mobile details.section > summary { padding: 14px 12px; font-size: .98rem; min-height: 52px; }
+  body.mobile details.section details.section > summary { font-size: .92rem; padding: 12px 10px; }
+  body.mobile .section-body { padding: 4px 12px 14px; }
+  body.mobile .section-body p.note { font-size: .88rem; }
+  body.mobile .badge { font-size: .7rem; padding: 3px 6px; min-width: 34px; }
+
+  body.mobile pre { font-size: .74rem; padding: 10px 11px; margin: 8px -4px; border-radius: 9px; }
+  body.mobile .copy-btn { opacity: .75; padding: 4px 8px; }
+  body.mobile .tbl { font-size: .82rem; }
+  body.mobile .tbl th, body.mobile .tbl td { padding: 7px 8px; }
+  body.mobile .vs-grid { grid-template-columns: 1fr; gap: 8px; }
+  body.mobile .tags span { font-size: .8rem; }
+
+  /* Подсказка — нижняя шторка */
+  body.mobile #tip {
+    left: 10px !important; right: 10px; top: auto !important; max-width: none;
+    bottom: calc(80px + env(safe-area-inset-bottom)); padding: 14px 16px; font-size: .9rem; border-radius: 14px;
+    pointer-events: auto; transform: translateY(14px);
+  }
+  body.mobile #tip.show { transform: translateY(0); }
+  body.mobile #tip::after { content: "нажми в любом месте, чтобы закрыть"; display: block; margin-top: 8px; font-size: .72rem; color: var(--tip-muted); }
+
+  /* Флипкарты */
+  body.mobile .chips { flex-wrap: nowrap; overflow-x: auto; margin: 0 -12px 10px; padding: 0 12px 4px; scrollbar-width: none; }
+  body.mobile .chips::-webkit-scrollbar { display: none; }
+  body.mobile .chip { white-space: nowrap; padding: 8px 13px; }
+  body.mobile .fc-stage { margin: 4px 0 12px; }
+  body.mobile .fc-card { min-height: min(56vh, 440px); }
+  body.mobile .fc-face { padding: 18px 18px; border-radius: 18px; }
+  body.mobile .fc-text { font-size: 1.15rem; }
+  body.mobile .fc-back .fc-text { font-size: .98rem; }
+  body.mobile .fc-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  body.mobile .fc-actions .btn { padding: 13px 10px; font-size: .92rem; }
+  body.mobile .fc-actions .wide { grid-column: span 2; }
+  body.mobile .kbd-hint { display: none; }
+
+  /* Тест */
+  body.mobile .panel { padding: 14px 14px; border-radius: 14px; }
+  body.mobile .qz-q { font-size: 1.04rem; }
+  body.mobile .qz-opt { padding: 14px 12px; min-height: 52px; }
+  body.mobile .qz-nav { position: sticky; bottom: calc(76px + env(safe-area-inset-bottom)); margin: 14px -4px 0; }
+  body.mobile .qz-nav .btn { flex: 1; padding: 14px; }
+  body.mobile .qz-topics .r { grid-template-columns: 90px 1fr 46px; }
+  body.mobile .center-actions .btn { flex: 1 1 100%; padding: 13px; }
+  body.mobile .btn { min-height: 46px; }
+
+  body.mobile .gloss-table td:first-child { white-space: normal; }
+  body.mobile footer { margin-top: 30px; }
+  body.mobile .fc-prev { order: 1; } body.mobile .fc-next { order: 2; }
+  body.mobile .fc-again { order: 3; } body.mobile .fc-know { order: 4; }
+  body.mobile .qz-setup .chips { flex-wrap: wrap; overflow: visible; margin: 0 0 4px; padding: 0; }
+
+</style>
+</head>
+<body>
+<script>(function(){var m=window.matchMedia&&matchMedia("(max-width: 700px)");function a(){document.body.classList.toggle("mobile",!!(m&&m.matches))}a();if(m&&m.addEventListener)m.addEventListener("change",function(){a();window.dispatchEvent(new Event("layoutchange"))})})()</script>
+<div class="wrap">
+
+  <header class="top">
+    <h1>🗄 SQL: основы</h1>
+    <button class="theme-toggle" id="themeBtn" aria-label="Переключить тему">
+      <span id="themeIcon">🌙</span>
+      <span id="themeLabel">Тёмная тема</span>
+    </button>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button class="tab active" data-view="ref" role="tab"><span class="ico">📘</span><span class="lbl">Справочник</span></button>
+    <button class="tab" data-view="cards" role="tab"><span class="ico">🃏</span><span class="lbl">Флипкарты</span></button>
+    <button class="tab" data-view="quiz" role="tab"><span class="ico">✅</span><span class="lbl">Тест</span></button>
+    <button class="tab" data-view="gloss" role="tab"><span class="ico">🔤</span><span class="lbl">Термины</span></button>
+  </nav>
+
+  <!-- ==================== СПРАВОЧНИК ==================== -->
+  <section class="view active" id="view-ref">
+    <p class="subtitle">SELECT, WHERE, NULL, GROUP BY, JOIN, подзапросы, оконные функции, изменение данных, ключи, индексы и транзакции — с примерами на одной учебной базе и блоками «Для QA». После изучения — флипкарты и тест.</p>
+    <div class="controls">
+      <input class="gloss-search ref-search" id="refSearch" type="search" placeholder="Поиск по справочнику: LEFT JOIN, HAVING, NULL…">
+      <button class="mini-btn" id="expandAll">Развернуть всё</button>
+      <button class="mini-btn" id="collapseAll">Свернуть всё</button>
+      <span class="hint">┄ пунктир под словом = есть подсказка (наведи мышь; на телефоне — тап)</span>
+    </div>
+    <nav class="toc" id="toc"></nav>
+    <div id="refContent">
+  <!-- ==================== ЧТО ТАКОЕ SQL ==================== -->
+  <details class="section" id="s-about" open>
+    <summary><span class="badge b-blue">🗄</span> Что такое SQL и база данных <span class="chev">▶</span></summary>
+    <div class="section-body">
+      <p class="note">SQL (Structured Query Language) — язык запросов к реляционным базам данных. Вы не пишете, <i>как</i> искать данные (циклы, переборы), а описываете, <i>что</i> нужно получить: «дай имена пользователей из Москвы, отсортированные по возрасту». Как именно это найти, решает СУБД — это декларативный подход.</p>
+      <div class="vs-grid">
+        <div class="vs-card"><h4>Таблица</h4><p>Похожа на лист Excel: столбцы (поля) имеют имя и тип, строки (записи) — это отдельные объекты. Таблица <code>users</code> — пользователи, одна строка = один пользователь.</p></div>
+        <div class="vs-card"><h4>Реляционная модель</h4><p>Данные разложены по нескольким таблицам, которые связаны ключами. Заказ не хранит имя клиента — только его <code>user_id</code>. Связь «по ключу» и есть отношение (relation).</p></div>
+        <div class="vs-card"><h4>СУБД</h4><p>Программа, которая хранит данные и выполняет запросы: PostgreSQL, MySQL, MS SQL Server, Oracle, SQLite. SQL у всех почти одинаковый, но есть диалекты — различия в функциях и деталях.</p></div>
+        <div class="vs-card"><h4>Порядок строк не гарантирован</h4><p>Таблица — это множество строк, а не список. Без <code>ORDER BY</code> база вправе вернуть строки в любом порядке, и порядок может поменяться между запусками.</p></div>
+      </div>
+
+      <h3 class="sub">Группы команд SQL</h3>
+      <div class="table-scroll"><table class="tbl">
+        <thead><tr><th>Группа</th><th>Расшифровка</th><th>Команды</th><th>Для чего</th></tr></thead>
+        <tbody>
+          <tr class="hot"><td><b>DQL</b></td><td>Data Query Language</td><td><code>SELECT</code></td><td>Чтение данных — 90% работы QA</td></tr>
+          <tr class="hot"><td><b>DML</b></td><td>Data Manipulation Language</td><td><code>INSERT</code>, <code>UPDATE</code>, <code>DELETE</code></td><td>Изменение строк</td></tr>
+          <tr><td><b>DDL</b></td><td>Data Definition Language</td><td><code>CREATE</code>, <code>ALTER</code>, <code>DROP</code>, <code>TRUNCATE</code></td><td>Структура: таблицы, индексы</td></tr>
+          <tr><td><b>DCL</b></td><td>Data Control Language</td><td><code>GRANT</code>, <code>REVOKE</code></td><td>Права доступа</td></tr>
+          <tr><td><b>TCL</b></td><td>Transaction Control Language</td><td><code>BEGIN</code>, <code>COMMIT</code>, <code>ROLLBACK</code></td><td>Транзакции</td></tr>
+        </tbody>
+      </table></div>
+      <p class="legend-hot">★ — то, что QA-инженер пишет каждый день</p>
+
+      <h3 class="sub">Учебная база этого справочника</h3>
+      <p class="note">Все примеры ниже выполняются на двух таблицах: пользователи и их заказы. У Веры и Дины заказов нет, у Веры не указан возраст, у Дины — город. Эти «дырки» специально: на них видны ловушки с <code>NULL</code> и <code>JOIN</code>.</p>
+<pre class="code" data-lang="sql">-- users                              orders
+-- id | name  | city   | age          id | user_id | amount | status    | created_at
+-- 1  | Анна  | Москва | 28           1  | 1       | 500    | paid      | 2026-01-10
+-- 2  | Борис | СПб    | 35           2  | 1       | 1500   | paid      | 2026-02-03
+-- 3  | Вера  | Москва | NULL         3  | 2       | 700    | new       | 2026-02-15
+-- 4  | Глеб  | Казань | 42           4  | 4       | 300    | cancelled | 2026-03-01
+-- 5  | Дина  | NULL   | 19           5  | 4       | 1200   | paid      | 2026-03-20
+--                                    6  | 2       | 200    | paid      | 2026-03-25</pre>
+<pre class="sh">sqlite3 shop.db &lt; seed.sql     # создать базу из файла demo/seed.sql рядом со справочником
+sqlite3 shop.db                 # открыть консоль; .tables — список таблиц, .quit — выход
+psql -h host -U user -d shop    # подключиться к PostgreSQL
+mysql -h host -u user -p shop   # подключиться к MySQL</pre>
+
+      <h3 class="sub">Синтаксис в двух словах</h3>
+      <ul class="checks">
+        <li>Ключевые слова не зависят от регистра: <code>select</code> = <code>SELECT</code>. Принято писать их заглавными, чтобы отличать от имён.</li>
+        <li>Строки — в <b>одинарных</b> кавычках: <code>'Москва'</code>. Двойные кавычки — для имён столбцов и таблиц: <code>"order"</code> (в MySQL — обратные <code>`order`</code>).</li>
+        <li>Запрос заканчивается точкой с запятой <code>;</code>. Переносы строк и пробелы не важны.</li>
+        <li>Комментарии: <code>-- до конца строки</code> и <code>/* многострочный */</code>.</li>
+      </ul>
+
+      <div class="qa-block"><p class="qa-title">Для QA</p><ul>
+        <li>SQL нужен, чтобы проверить, что действие в интерфейсе или запрос к API реально записали в базу то, что ожидалось.</li>
+        <li>Подготовка тестовых данных: создать пользователя с нужным статусом быстрее одним <code>INSERT</code>, чем через пять экранов.</li>
+        <li>Поиск багов в данных: дубли, «сироты» без родительской записи, пустые обязательные поля — см. раздел «SQL для QA».</li>
+        <li>На проде и общем стенде обычно доступ только на чтение. Любой <code>UPDATE</code>/<code>DELETE</code> — только на своём стенде и только с <code>WHERE</code>.</li>
+      </ul></div>
+    </div>
+  </details>
+
+  <!-- ==================== SELECT ==================== -->
+  <details class="section" id="s-select">
+    <summary><span class="badge b-green">SEL</span> SELECT: выборка и сортировка <span class="chev">▶</span></summary>
+    <div class="section-body">
+      <p class="note"><code>SELECT</code> — главная команда: прочитать данные. Минимальный запрос — «какие столбцы» + «из какой таблицы». Результат запроса — тоже таблица, только временная.</p>
+
+      <details class="section"><summary><span class="badge b-green">1</span> Столбцы и псевдонимы <span class="chev">▶</span></summary><div class="section-body">
+<pre class="code" data-lang="sql">SELECT * FROM users;                        -- все столбцы, все строки
+SELECT name, city FROM users;               -- только нужные столбцы
+SELECT name AS "Имя", age + 1 AS next_age   -- псевдоним (alias) и вычисление
+FROM users;                                 -- Анна | 29, ..., Вера | NULL
+SELECT 2 + 2;                               -- 4 (в PostgreSQL/MySQL/SQLite FROM не обязателен)</pre>
+        <p class="note">Псевдоним <code>AS</code> переименовывает столбец в результате (слово <code>AS</code> можно опустить). Таблицам тоже дают короткие псевдонимы: <code>FROM users u</code> — дальше пишем <code>u.name</code>.</p>
+        <div class="neg-block"><p class="neg-title">✕ Частые ошибки</p><ol>
+          <li><code>SELECT *</code> в автотестах и коде: добавят столбец — сломается порядок и маппинг. Перечисляйте столбцы явно.</li>
+          <li><code>NULL + 1</code> даёт <code>NULL</code>, а не 1: у Веры <code>next_age</code> пустой.</li>
+        </ol></div>
+      </div></details>
+
+      <details class="section"><summary><span class="badge b-green">2</span> DISTINCT — без повторов <span class="chev">▶</span></summary><div class="section-body">
+<pre class="code" data-lang="sql">SELECT DISTINCT city FROM users;            -- Москва, СПб, Казань, NULL (4 строки)
+SELECT DISTINCT user_id, status FROM orders; -- уникальны ПАРЫ значений, а не каждый столбец</pre>
+        <p class="note"><code>DISTINCT</code> применяется ко всей строке результата целиком. <code>NULL</code> считается одним значением и попадает в результат один раз.</p>
+      </div></details>
+
+      <details class="section"><summary><span class="badge b-green">3</span> ORDER BY — сортировка <span class="chev">▶</span></summary><div class="section-body">
+<pre class="code" data-lang="sql">SELECT name, age FROM users ORDER BY age;          -- по возрастанию (ASC по умолчанию)
+SELECT name, age FROM users ORDER BY age DESC;     -- по убыванию
+SELECT name, city, age FROM users
+ORDER BY city, age DESC;                           -- сначала по городу, внутри — по возрасту
+SELECT name, age FROM users ORDER BY 2;            -- по номеру столбца (2-й = age), лучше не злоупотреблять
+SELECT name, age FROM users ORDER BY age NULLS LAST; -- PostgreSQL/SQLite: куда ставить NULL</pre>
+        <p class="note">Где окажутся <code>NULL</code> при сортировке, зависит от СУБД: в PostgreSQL и Oracle <code>NULL</code> «больше всех» (в конце при ASC), в MySQL, SQLite и SQL Server — «меньше всех» (в начале).</p>
+      </div></details>
+
+      <details class="section"><summary><span class="badge b-green">4</span> LIMIT / OFFSET — первые N строк <span class="chev">▶</span></summary><div class="section-body">
+<pre class="code" data-lang="sql">SELECT name, age FROM users ORDER BY age DESC LIMIT 2;            -- Глеб 42, Борис 35
+SELECT * FROM orders ORDER BY id LIMIT 2 OFFSET 2;                -- пропустить 2, взять 2: id 3, 4
+SELECT TOP 2 * FROM users;                                        -- SQL Server
+SELECT * FROM users ORDER BY id FETCH FIRST 2 ROWS ONLY;          -- стандарт SQL, PostgreSQL, Oracle 12+</pre>
+        <div class="qa-block"><p class="qa-title">Для QA</p><ul>
+          <li>Пагинация в API почти всегда — <code>LIMIT/OFFSET</code>. Проверяйте: последнюю страницу, страницу за пределами, одинаковые значения сортировки (без уникального поля в <code>ORDER BY</code> строки могут «прыгать» между страницами и дублироваться).</li>
+          <li><code>LIMIT</code> без <code>ORDER BY</code> — «какие-то» N строк. Тест, который на это опирается, будет нестабильным.</li>
+        </ul></div>
+      </div></details>
+
+      <details class="section"><summary><span class="badge b-green">5</span> Порядок выполнения запроса <span class="chev">▶</span></summary><div class="section-body">
+        <p class="note">Пишем в одном порядке, а база выполняет в другом. Это объясняет половину ошибок: почему псевдоним из <code>SELECT</code> нельзя использовать в <code>WHERE</code>, но можно в <code>ORDER BY</code>.</p>
+        <div class="table-scroll"><table class="tbl">
+          <thead><tr><th>Шаг</th><th>Часть</th><th>Что происходит</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td><code>FROM</code> / <code>JOIN</code></td><td>Собрать исходные строки, соединить таблицы</td></tr>
+            <tr><td>2</td><td><code>WHERE</code></td><td>Отфильтровать строки</td></tr>
+            <tr><td>3</td><td><code>GROUP BY</code></td><td>Разбить на группы</td></tr>
+            <tr><td>4</td><td><code>HAVING</code></td><td>Отфильтровать группы</td></tr>
+            <tr class="hot"><td>5</td><td><code>SELECT</code></td><td>Вычислить столбцы и псевдонимы, оконные функции</td></tr>
+            <tr><td>6</td><td><code>DISTINCT</code></td><td>Убрать повторы</td></tr>
+            <tr><td>7</td><td><code>ORDER BY</code></td><td>Отсортировать (псевдонимы уже известны)</td></tr>
+            <tr><td>8</td><td><code>LIMIT</code> / <code>OFFSET</code></td><td>Обрезать результат</td></tr>
+          </tbody>
+        </table></div>
+<pre class="code" data-lang="sql">SELECT name, age * 12 AS months FROM users WHERE months &gt; 400;   -- ошибка: months ещё не существует
+SELECT name, age * 12 AS months FROM users WHERE age * 12 &gt; 400;  -- так правильно
+SELECT name, age * 12 AS months FROM users ORDER BY months;       -- в ORDER BY псевдоним можно</pre>
+        <p class="note">SQLite и MySQL прощают псевдоним в <code>WHERE</code>/<code>HAVING</code>, PostgreSQL — нет. Пишите по стандарту, чтобы запрос работал везде.</p>
+      </div></details>
+    </div>
+  </details>
+
+  <!-- ==================== WHERE ==================== -->
+  <details class="section" id="s-where">
+    <summary><span class="badge b-teal">WHR</span> WHERE: фильтрация строк <span class="chev">▶</span></summary>
+    <div class="section-body">
+      <p class="note"><code>WHERE</code> оставляет только строки, для которых условие <b>истинно</b>. Если условие ложно или неизвестно (<code>NULL</code>), строка отбрасывается.</p>
+
+      <details class="section"><summary><span class="badge b-teal">1</span> Сравнение и логика <span class="chev">▶</span></summary><div class="section-body">
+<pre class="code" data-lang="sql">SELECT name FROM users WHERE city = 'Москва';        -- Анна, Вера
+SELECT name FROM users WHERE age &gt;= 30;              -- Борис, Глеб
+SELECT name FROM users WHERE city &lt;&gt; 'Москва';       -- Борис, Глеб  (Дина с NULL не попала!)
+SELECT name FROM users WHERE city = 'Москва' AND age &lt; 30;   -- Анна
+SELECT name FROM users WHERE city = 'СПб' OR age &gt; 40;       -- Борис, Глеб
+SELECT name FROM users WHERE NOT city = 'Москва';    -- Борис, Глеб</pre>
+        <p class="note">Не равно — <code>&lt;&gt;</code> (стандарт) или <code>!=</code> (поддерживают почти все). У <code>AND</code> приоритет выше, чем у <code>OR</code>, как у умножения перед сложением.</p>
+<pre class="code" data-lang="sql">-- хотели: «старше 30 ИЛИ из Москвы» и при этом младше 30 — запутались в приоритете
+SELECT name FROM users WHERE age &gt; 30 OR city = 'Москва' AND age &lt; 30;
+-- читается как: age &gt; 30 OR (city = 'Москва' AND age &lt; 30)  → Анна, Борис, Глеб
+SELECT name FROM users WHERE (age &gt; 30 OR city = 'Москва') AND age &lt; 30;  -- Анна</pre>
+        <div class="neg-block"><p class="neg-title">✕ Частая ошибка</p><ol><li>Смешали <code>AND</code> и <code>OR</code> без скобок. Правило: если в условии есть оба — всегда ставьте скобки.</li></ol></div>
+      </div></details>
+
+      <details class="section"><summary><span class="badge b-teal">2</span> IN, BETWEEN <span class="chev">▶</span></summary><div class="section-body">
+<pre class="code" data-lang="sql">SELECT id FROM orders WHERE status IN ('new', 'cancelled');   -- 3, 4  (короче, чем два OR)
+SELECT id FROM orders WHERE status NOT IN ('paid');           -- 3, 4
+SELECT name FROM users WHERE age BETWEEN 19 AND 35;           -- Анна, Борис, Дина (границы ВКЛЮЧЕНЫ)
+SELECT id FROM orders
+WHERE created_at BETWEEN '2026-02-01' AND '2026-02-28';       -- 2, 3</pre>
+        <div class="neg-block"><p class="neg-title">✕ Ловушка с датами</p><ol>
+          <li>Если столбец хранит дату со временем, <code>BETWEEN '2026-02-01' AND '2026-02-28'</code> не захватит 28 февраля после 00:00. Надёжнее полуинтервал:
+<pre class="code" data-lang="sql">WHERE created_at &gt;= '2026-02-01' AND created_at &lt; '2026-03-01'</pre></li>
+        </ol></div>
+      </div></details>
+
+      <details class="section"><summary><span class="badge b-teal">3</span> LIKE — поиск по шаблону <span class="chev">▶</span></summary><div class="section-body">
+<pre class="code" data-lang="sql">SELECT name FROM users WHERE name LIKE 'А%';      -- начинается с «А»: Анна
+SELECT name FROM users WHERE name LIKE '%а';      -- заканчивается на «а»: Анна, Вера, Дина
+SELECT name FROM users WHERE name LIKE '_ера';    -- ровно один любой символ + «ера»: Вера
+SELECT name FROM users WHERE name LIKE '%ор%';    -- содержит «ор»: Борис
+SELECT email FROM users WHERE email LIKE '%\_%' ESCAPE '\';  -- ищем сам символ «_»</pre>
+        <div class="table-scroll"><table class="tbl">
+          <thead><tr><th>Символ</th><th>Значит</th><th>Пример</th></tr></thead>
+          <tbody>
+            <tr><td><code>%</code></td><td>Любое число любых символов, в том числе ноль</td><td><code>'te%'</code> → test, te</td></tr>
+            <tr><td><code>_</code></td><td>Ровно один любой символ</td><td><code>'t_st'</code> → test, tost</td></tr>
+          </tbody>
+        </table></div>
+        <p class="note">Чувствительность к регистру зависит от СУБД: в PostgreSQL <code>LIKE</code> различает регистр (для без учёта есть <code>ILIKE</code>), в MySQL обычно нет. Универсально: <code>LOWER(name) LIKE 'анна%'</code>. <code>LIKE '%текст'</code> с <code>%</code> в начале не может использовать обычный индекс — на больших таблицах это медленно.</p>
+      </div></details>
+
+      <details class="section"><summary><span class="badge b-teal">✓</span> Шпаргалка по условиям <span class="chev">▶</span></summary><div class="section-body">
+        <div class="table-scroll"><table class="tbl">
+          <thead><tr><th>Условие</th><th>Пример</th></tr></thead>
+          <tbody>
+            <tr><td>Равно / не равно</td><td><code>status = 'paid'</code>, <code>status &lt;&gt; 'paid'</code></td></tr>
+            <tr><td>Больше / меньше</td><td><code>&gt;</code>, <code>&lt;</code>, <code>&gt;=</code>, <code>&lt;=</code></td></tr>
+            <tr><td>Диапазон (с границами)</td><td><code>age BETWEEN 18 AND 30</code></td></tr>
+            <tr><td>Из списка</td><td><code>city IN ('Москва', 'СПб')</code></td></tr>
+            <tr><td>По шаблону</td><td><code>name LIKE 'А%'</code></td></tr>
+            <tr class="hot"><td>Пусто / не пусто</td><td><code>city IS NULL</code>, <code>city IS NOT NULL</code></td></tr>
+            <tr><td>Есть связанные строки</td><td><code>EXISTS (SELECT 1 FROM ...)</code></td></tr>
+          </tbody>
+        </table></div>
+        <p class="legend-hot">★ — с <code>NULL</code> работает только <code>IS NULL</code>, не <code>= NULL</code></p>
+      </div></details>
+    </div>
+  </details>
+
+  <!-- ==================== NULL ==================== -->
+  <details class="section" id="s-null">
+    <summary><span class="badge b-purple">∅</span> NULL и трёхзначная логика <span class="chev">▶</span></summary>
+    <div class="section-body">
+      <p class="note"><code>NULL</code> — это не ноль и не пустая строка, а «значение неизвестно». Возраст Веры не 0 лет, он просто не указан. Отсюда главное правило: любое сравнение с неизвестным даёт неизвестность. «Вере больше 30?» — «Не знаю».</p>
+      <div class="vs-grid">
+        <div class="vs-card"><h4><code>NULL</code></h4><p>Значения нет. <code>NULL = NULL</code> → <code>NULL</code> (а не TRUE): два неизвестных не обязательно равны.</p></div>
+        <div class="vs-card"><h4><code>''</code> пустая строка</h4><p>Значение есть, оно пустое. <code>'' = ''</code> → TRUE. (Исключение — Oracle: там <code>''</code> и есть <code>NULL</code>.)</p></div>
+        <div class="vs-card"><h4><code>0</code></h4><p>Обычное число. Баланс 0 ₽ и «баланс неизвестен» — разные состояния, и это важно для бизнес-логики.</p></div>
+      </div>
+
+      <h3 class="sub">Трёхзначная логика: TRUE, FALSE, UNKNOWN</h3>
+<pre class="code" data-lang="sql">SELECT name FROM users WHERE age = NULL;      -- пусто! сравнение с NULL всегда UNKNOWN
+SELECT name FROM users WHERE age IS NULL;     -- Вера
+SELECT name FROM users WHERE city IS NOT NULL;-- Анна, Борис, Вера, Глеб
+SELECT NULL = NULL, NULL &lt;&gt; 1, NULL + 5;      -- NULL, NULL, NULL</pre>
+      <div class="table-scroll"><table class="tbl">
+        <thead><tr><th>A</th><th>B</th><th>A AND B</th><th>A OR B</th><th>NOT A</th></tr></thead>
+        <tbody>
+          <tr><td>TRUE</td><td>NULL</td><td class="mid">NULL</td><td class="yes">TRUE</td><td>FALSE</td></tr>
+          <tr><td>FALSE</td><td>NULL</td><td class="no">FALSE</td><td class="mid">NULL</td><td>TRUE</td></tr>
+          <tr><td>NULL</td><td>NULL</td><td class="mid">NULL</td><td class="mid">NULL</td><td class="mid">NULL</td></tr>
+        </tbody>
+      </table></div>
+      <p class="note">Логика: <code>FALSE AND что угодно</code> — точно ложь; <code>TRUE OR что угодно</code> — точно истина. В остальных случаях с <code>NULL</code> ответ неизвестен.</p>
+
+      <h3 class="sub">Функции для NULL</h3>
+<pre class="code" data-lang="sql">SELECT name, COALESCE(city, 'не указан') FROM users;  -- первое не-NULL значение: Дина | не указан
+SELECT COALESCE(NULL, NULL, 3, 4);                    -- 3
+SELECT NULLIF(5, 5), NULLIF(5, 3);                    -- NULL, 5 (NULL, если равны)
+SELECT 100 / NULLIF(0, 0);                            -- NULL вместо ошибки деления на ноль
+-- IFNULL(a, b) — MySQL/SQLite, ISNULL(a, b) — SQL Server, NVL(a, b) — Oracle: всё это COALESCE на два аргумента</pre>
+
+      <h3 class="sub">Где NULL ведёт себя неочевидно</h3>
+      <div class="table-scroll"><table class="tbl">
+        <thead><tr><th>Ситуация</th><th>Что происходит</th></tr></thead>
+        <tbody>
+          <tr class="hot"><td><code>WHERE city &lt;&gt; 'Москва'</code></td><td>Строки с <code>city IS NULL</code> не попадут. Нужно <code>... OR city IS NULL</code></td></tr>
+          <tr class="hot"><td><code>NOT IN (подзапрос с NULL)</code></td><td>Возвращает 0 строк! См. раздел «Подзапросы»</td></tr>
+          <tr><td><code>COUNT(*)</code> vs <code>COUNT(age)</code></td><td><code>COUNT(*)</code> = 5 строк, <code>COUNT(age)</code> = 4: <code>NULL</code> не считается</td></tr>
+          <tr><td><code>AVG(age)</code></td><td>31 = 124 / 4, а не 124 / 5: <code>NULL</code> игнорируется</td></tr>
+          <tr><td><code>GROUP BY city</code></td><td>Все <code>NULL</code> собираются в одну группу</td></tr>
+          <tr><td><code>DISTINCT</code></td><td><code>NULL</code> попадает один раз</td></tr>
+          <tr><td><code>UNIQUE</code>-ограничение</td><td>В большинстве СУБД допускает несколько <code>NULL</code> (они «не равны» друг другу)</td></tr>
+          <tr><td><code>'abc' || NULL</code></td><td><code>NULL</code> — склейка с неизвестным даёт неизвестное (в MySQL <code>CONCAT</code> тоже)</td></tr>
+        </tbody>
+      </table></div>
+      <p class="legend-hot">★ — самые частые баги в отчётах и фильтрах</p>
+      <div class="qa-block"><p class="qa-title">Для QA</p><ul>
+        <li>Для каждого необязательного поля проверяйте фильтры и отчёты с <code>NULL</code>: «все, кроме Москвы» должны включать пользователей без города?</li>
+        <li>Различайте в требованиях «поле пустое» (<code>''</code>) и «поле не заполнено» (<code>NULL</code>) — API и UI часто путают их.</li>
+        <li>Проверка обязательных полей: <code>SELECT COUNT(*) FROM users WHERE email IS NULL OR email = '';</code> — должно быть 0.</li>
+      </ul></div>
+    </div>
+  </details>
+
+  <!-- ==================== АГРЕГАТЫ ==================== -->
+  <details class="section" id="s-group">
+    <summary><span class="badge b-orange">Σ</span> Агрегаты, GROUP BY, HAVING <span class="chev">▶</span></summary>
+    <div class="section-body">
+      <p class="note">Агрегатная функция сворачивает много строк в одно число: сколько, сумма, среднее, минимум, максимум. <code>GROUP BY</code> делает то же самое, но отдельно для каждой группы — как сводная таблица в Excel.</p>
+
+      <details class="section"><summary><span class="badge b-orange">1</span> Агрегатные функции <span class="chev">▶</span></summary><div class="section-body">
+<pre class="code" data-lang="sql">SELECT COUNT(*) FROM users;              -- 5   число строк
+SELECT COUNT(age) FROM users;            -- 4   число НЕ-NULL значений
+SELECT COUNT(DISTINCT city) FROM users;  -- 3   разных городов (NULL не считается)
+SELECT SUM(amount) FROM orders;          -- 4400
+SELECT AVG(age) FROM users;              -- 31.0  (124 / 4 — Вера без возраста не учтена)
+SELECT MIN(amount), MAX(amount) FROM orders;  -- 200, 1500
+SELECT MAX(created_at) FROM orders;      -- 2026-03-25  (MIN/MAX работают и со строками, датами)</pre>
+        <div class="table-scroll"><table class="tbl">
+          <thead><tr><th>Функция</th><th>Считает</th><th>NULL</th><th>Пустая таблица</th></tr></thead>
+          <tbody>
+            <tr class="hot"><td><code>COUNT(*)</code></td><td>Строки</td><td class="yes">считает</td><td>0</td></tr>
+            <tr><td><code>COUNT(col)</code></td><td>Не-NULL значения</td><td class="no">пропускает</td><td>0</td></tr>
+            <tr><td><code>SUM(col)</code></td><td>Сумма</td><td class="no">пропускает</td><td class="mid">NULL, не 0!</td></tr>
+            <tr><td><code>AVG(col)</code></td><td>Среднее</td><td class="no">пропускает</td><td class="mid">NULL</td></tr>
+            <tr><td><code>MIN</code> / <code>MAX</code></td><td>Крайние значения</td><td class="no">пропускает</td><td class="mid">NULL</td></tr>
+          </tbody>
+        </table></div>
+        <p class="note">Сумма пустого набора — <code>NULL</code>. В отчёте «выручка за день без заказов» покажет пустоту вместо 0: оборачивайте в <code>COALESCE(SUM(amount), 0)</code>. В PostgreSQL <code>AVG</code> целых чисел возвращает дробное, а в SQL Server — целое (<code>AVG</code> от 1 и 2 = 1): приводите к дробному типу.</p>
+      </div></details>
+
+      <details class="section"><summary><span class="badge b-orange">2</span> GROUP BY — по группам <span class="chev">▶</span></summary><div class="section-body">
+<pre class="code" data-lang="sql">SELECT status, COUNT(*) AS cnt
+FROM orders
+GROUP BY status;
+-- cancelled | 1
+-- new       | 1
+-- paid      | 4
+
+SELECT user_id, COUNT(*) AS orders_cnt, SUM(amount) AS total
+FROM orders
+GROUP BY user_id
+ORDER BY total DESC;
+-- 1 | 2 | 2000
+-- 4 | 2 | 1500
+-- 2 | 2 | 900</pre>
+        <p class="note">Правило: в <code>SELECT</code> при группировке можно писать только столбцы из <code>GROUP BY</code> и агрегаты. Иначе непонятно, какое значение показать: в группе <code>paid</code> четыре разных <code>amount</code> — какой из них вывести?</p>
+<pre class="code" data-lang="sql">SELECT status, amount, COUNT(*) FROM orders GROUP BY status;
+-- PostgreSQL: ERROR: column "orders.amount" must appear in the GROUP BY clause
+-- MySQL (без ONLY_FULL_GROUP_BY) и SQLite: вернут СЛУЧАЙНЫЙ amount из группы — тихий баг</pre>
+      </div></details>
+
+      <details class="section"><summary><span class="badge b-orange">3</span> HAVING — фильтр групп <span class="chev">▶</span></summary><div class="section-body">
+<pre class="code" data-lang="sql">-- клиенты, оплатившие больше 1000 в сумме
+SELECT user_id, SUM(amount) AS paid_total
+FROM orders
+WHERE status = 'paid'          -- 1) сначала отбираем строки: только оплаченные
+GROUP BY user_id               -- 2) группируем
+HAVING SUM(amount) &gt; 1000;     -- 3) отбираем группы
+-- 1 | 2000
+-- 4 | 1200</pre>
+        <div class="vs-grid">
+          <div class="vs-card"><h4><code>WHERE</code></h4><p>Фильтрует <b>строки до</b> группировки. Агрегаты в нём нельзя: <code>WHERE SUM(amount) &gt; 1000</code> — ошибка.</p></div>
+          <div class="vs-card"><h4><code>HAVING</code></h4><p>Фильтрует <b>группы после</b> группировки. Работает с агрегатами. Условия на обычные столбцы лучше ставить в <code>WHERE</code> — меньше строк попадёт в группировку.</p></div>
+        </div>
+      </div></details>
+
+      <details class="section"><summary><span class="badge b-orange">✓</span> Шпаргалка <span class="chev">▶</span></summary><div class="section-body">
+<pre class="code" data-lang="sql">SELECT   столбцы_группировки, агрегаты
+FROM     таблица
+WHERE    условие_на_строки
+GROUP BY столбцы_группировки
+HAVING   условие_на_агрегаты
+ORDER BY ...
+LIMIT    ...;</pre>
+        <div class="qa-block"><p class="qa-title">Для QA</p><ul>
+          <li>Сверка отчёта: цифры на дашборде = <code>SELECT COUNT(*), SUM(amount) ... GROUP BY</code> по тем же условиям (статус, период, часовой пояс!).</li>
+          <li>Поиск дублей: <code>GROUP BY email HAVING COUNT(*) &gt; 1</code>.</li>
+        </ul></div>
+      </div></details>
+    </div>
+  </details>
+
+  <!-- ==================== JOIN ==================== -->
+  <details class="section" id="s-join">
+    <summary><span class="badge b-blue">⋈</span> JOIN: соединение таблиц <span class="chev">▶</span></summary>
+    <div class="section-body">
+      <p class="note"><code>JOIN</code> склеивает строки двух таблиц по условию в <code>ON</code>, обычно «внешний ключ = первичный ключ»: <code>orders.user_id = users.id</code>. Каждая пара строк, для которой условие истинно, даёт одну строку результата. Разные виды <code>JOIN</code> отличаются тем, что делать со строками, которым пары не нашлось.</p>
+      <div class="table-scroll"><table class="tbl">
+        <thead><tr><th>Вид</th><th>Что вернёт</th><th>Строк на учебной базе</th></tr></thead>
+        <tbody>
+          <tr class="hot"><td><code>INNER JOIN</code> (или просто <code>JOIN</code>)</td><td>Только пары, где совпало</td><td>6 (Вера и Дина пропали)</td></tr>
+          <tr class="hot"><td><code>LEFT JOIN</code></td><td>Все строки левой + пары из правой, иначе <code>NULL</code></td><td>8 (Вера и Дина с <code>NULL</code> вместо заказа)</td></tr>
+          <tr><td><code>RIGHT JOIN</code></td><td>Зеркально: все строки правой</td><td>6</td></tr>
+          <tr><td><code>FULL JOIN</code></td><td>Все строки обеих, где нет пары — <code>NULL</code></td><td>8 (нет в MySQL)</td></tr>
+          <tr><td><code>CROSS JOIN</code></td><td>Каждая строка с каждой (декартово произведение)</td><td>5 × 6 = 30</td></tr>
+        </tbody>
+      </table></div>
+      <p class="legend-hot">★ — 95% всех соединений</p>
+
+      <details class="section"><summary><span class="badge b-blue">1</span> INNER JOIN <span class="chev">▶</span></summary><div class="section-body">
+<pre class="code" data-lang="sql">SELECT u.name, o.id AS order_id, o.amount
+FROM users u
+JOIN orders o ON o.user_id = u.id
+ORDER BY o.id;
+-- Анна  | 1 | 500
+-- Анна  | 2 | 1500
+-- Борис | 3 | 700
+-- Глеб  | 4 | 300
+-- Глеб  | 5 | 1200
+-- Борис | 6 | 200</pre>
+        <p class="note">Анна встречается дважды — у неё два заказа. <code>JOIN</code> «один ко многим» размножает строки левой таблицы. Пользователи без заказов исчезли.</p>
+      </div></details>
+
+      <details class="section"><summary><span class="badge b-blue">2</span> LEFT JOIN и поиск «без пары» <span class="chev">▶</span></summary><div class="section-body">
+<pre class="code" data-lang="sql">SELECT u.name, COUNT(o.id) AS orders_cnt, COALESCE(SUM(o.amount), 0) AS total
+FROM users u
+LEFT JOIN orders o ON o.user_id = u.id
+GROUP BY u.id, u.name
+ORDER BY u.id;
+-- Анна  | 2 | 2000
+-- Борис | 2 | 900
+-- Вера  | 0 | 0       ← без заказов, но в отчёте есть
+-- Глеб  | 2 | 1500
+-- Дина  | 0 | 0
+
+-- анти-соединение: пользователи БЕЗ заказов
+SELECT u.name
+FROM users u
+LEFT JOIN orders o ON o.user_id = u.id
+WHERE o.id IS NULL;              -- Вера, Дина</pre>
+        <p class="note">Обратите внимание: <code>COUNT(o.id)</code>, а не <code>COUNT(*)</code>. У Веры одна строка с <code>NULL</code> вместо заказа — <code>COUNT(*)</code> посчитал бы её и дал 1.</p>
+        <div class="neg-block"><p class="neg-title">✕ Ловушка: условие в WHERE превращает LEFT в INNER</p><ol>
+          <li>Хотим всех пользователей и их <b>оплаченные</b> заказы:
+<pre class="code" data-lang="sql">-- неправильно: Вера и Дина пропадут (у них o.status IS NULL, условие не выполнено)
+SELECT u.name, o.amount FROM users u
+LEFT JOIN orders o ON o.user_id = u.id
+WHERE o.status = 'paid';
+-- правильно: фильтр правой таблицы — в ON
+SELECT u.name, o.amount FROM users u
+LEFT JOIN orders o ON o.user_id = u.id AND o.status = 'paid';</pre></li>
+        </ol></div>
+      </div></details>
+
+      <details class="section"><summary><span class="badge b-blue">3</span> Несколько таблиц, self join <span class="chev">▶</span></summary><div class="section-body">
+<pre class="code" data-lang="sql">-- цепочка: заказ → позиции → товары
+SELECT o.id, p.title, oi.qty
+FROM orders o
+JOIN order_items oi ON oi.order_id = o.id
+JOIN products p     ON p.id = oi.product_id;
+
+-- self join: таблица с самой собой (сотрудник и его руководитель)
+SELECT e.name AS employee, m.name AS manager
+FROM employees e
+LEFT JOIN employees m ON m.id = e.manager_id;
+
+-- пары пользователей из одного города (без повторов и без пары «сам с собой»)
+SELECT a.name, b.name
+FROM users a JOIN users b ON a.city = b.city AND a.id &lt; b.id;   -- Анна | Вера</pre>
+        <p class="note">Таблицы <code>order_items</code>, <code>products</code>, <code>employees</code> — для иллюстрации, их нет в учебной базе.</p>
+      </div></details>
+
+      <details class="section"><summary><span class="badge b-blue">4</span> Размножение строк <span class="chev">▶</span></summary><div class="section-body">
+        <p class="note">Если присоединить две «многие» таблицы к одной, строки перемножатся. У Анны 2 заказа и, скажем, 3 адреса — после двух <code>JOIN</code> будет 6 строк, и <code>SUM(amount)</code> окажется втрое больше.</p>
+<pre class="code" data-lang="sql">-- неправильно: сумма заказов задвоится/затроится
+SELECT u.name, SUM(o.amount) FROM users u
+JOIN orders o    ON o.user_id = u.id
+JOIN addresses a ON a.user_id = u.id
+GROUP BY u.name;
+-- правильно: сначала агрегировать, потом соединять
+SELECT u.name, t.total
+FROM users u
+JOIN (SELECT user_id, SUM(amount) AS total FROM orders GROUP BY user_id) t ON t.user_id = u.id;</pre>
+        <div class="qa-block"><p class="qa-title">Для QA</p><ul>
+          <li>Если в отчёте сумма или количество подозрительно кратно больше — первым делом ищите размножение строк в <code>JOIN</code>.</li>
+          <li>Сколько строк должно быть? До и после <code>JOIN</code> сравните <code>COUNT(*)</code> — это быстрая проверка, что ничего не потерялось и не размножилось.</li>
+          <li>Проверка целостности: заказы, у которых нет пользователя («сироты») — <code>LEFT JOIN users ... WHERE u.id IS NULL</code>.</li>
+        </ul></div>
+      </div></details>
+
+      <details class="section"><summary><span class="badge b-blue">5</span> UNION, INTERSECT, EXCEPT <span class="chev">▶</span></summary><div class="section-body">
+        <p class="note">JOIN склеивает таблицы «вбок» (добавляет столбцы), а операции над множествами — «вниз» (складывают строки). У запросов должно быть одинаковое число столбцов совместимых типов.</p>
+<pre class="code" data-lang="sql">SELECT city FROM users WHERE age &lt; 30
+UNION                       -- объединить и убрать дубли: NULL, Москва (2 строки)
+SELECT city FROM users WHERE city = 'Москва';
+
+SELECT user_id FROM orders WHERE status = 'paid'
+UNION ALL                   -- объединить БЕЗ удаления дублей (быстрее)
+SELECT user_id FROM orders WHERE status = 'new';     -- 1, 1, 4, 2, 2  (5 строк)
+
+SELECT id FROM users
+EXCEPT                      -- есть в первом, нет во втором (в Oracle — MINUS)
+SELECT user_id FROM orders; -- 3, 5
+
+SELECT id FROM users
+INTERSECT                   -- есть в обоих
+SELECT user_id FROM orders; -- 1, 2, 4</pre>
+        <p class="note"><code>UNION ALL</code> предпочтительнее, если дублей быть не может или они нужны: <code>UNION</code> сортирует/хеширует весь результат, чтобы убрать повторы. Для QA <code>EXCEPT</code> удобен для сверки двух наборов: «что есть в источнике, но не доехало в выгрузку».</p>
+      </div></details>
+    </div>
+  </details>
+
+  <!-- ==================== ПОДЗАПРОСЫ ==================== -->
+  <details class="section" id="s-subq">
+    <summary><span class="badge b-pink">( )</span> Подзапросы и CTE <span class="chev">▶</span></summary>
+    <div class="section-body">
+      <p class="note">Подзапрос — запрос внутри запроса, в скобках. Результат внутреннего используется внешним: как одно число, как список значений или как временная таблица. CTE (<code>WITH</code>) — тот же подзапрос, но вынесенный наверх и с именем, чтобы запрос читался сверху вниз.</p>
+
+      <details class="section"><summary><span class="badge b-pink">1</span> Скалярный подзапрос — одно значение <span class="chev">▶</span></summary><div class="section-body">
+<pre class="code" data-lang="sql">-- заказы дороже среднего (среднее = 733.33)
+SELECT id, amount FROM orders
+WHERE amount &gt; (SELECT AVG(amount) FROM orders);    -- 2 | 1500, 5 | 1200
+
+-- в SELECT: доля каждого заказа от общей суммы
+SELECT id, amount, ROUND(100.0 * amount / (SELECT SUM(amount) FROM orders), 1) AS pct
+FROM orders;                                         -- 1 | 500 | 11.4 ...</pre>
+        <p class="note">Скалярный подзапрос обязан вернуть ровно одну строку и один столбец. Если вернёт несколько строк — ошибка (в PostgreSQL <i>more than one row returned by a subquery</i>), если ноль — <code>NULL</code>.</p>
+      </div></details>
+
+      <details class="section"><summary><span class="badge b-pink">2</span> IN и NOT IN со списком <span class="chev">▶</span></summary><div class="section-body">
+<pre class="code" data-lang="sql">SELECT name FROM users
+WHERE id IN (SELECT user_id FROM orders WHERE status = 'paid');      -- Анна, Борис, Глеб
+
+SELECT name FROM users
+WHERE id NOT IN (SELECT user_id FROM orders);                        -- Вера, Дина</pre>
+        <div class="neg-block"><p class="neg-title">✕ Главная ловушка: NOT IN и NULL</p><ol>
+          <li>Если в подзапросе для <code>NOT IN</code> есть хотя бы один <code>NULL</code>, результат — <b>пустой</b>.
+<pre class="code" data-lang="sql">SELECT name FROM users WHERE id NOT IN (1, 2, NULL);    -- 0 строк!
+-- id NOT IN (1, 2, NULL)  ≡  id &lt;&gt; 1 AND id &lt;&gt; 2 AND id &lt;&gt; NULL
+-- последнее — UNKNOWN, значит всё условие никогда не TRUE</pre>
+          Если в <code>orders</code> появится заказ гостя с <code>user_id = NULL</code>, запрос «пользователи без заказов» внезапно вернёт ноль строк. Используйте <code>NOT EXISTS</code> или <code>LEFT JOIN ... IS NULL</code> — они не страдают от <code>NULL</code>.</li>
+        </ol></div>
+      </div></details>
+
+      <details class="section"><summary><span class="badge b-pink">3</span> EXISTS и коррелированный подзапрос <span class="chev">▶</span></summary><div class="section-body">
+<pre class="code" data-lang="sql">-- пользователи, у которых есть хотя бы один отменённый заказ
+SELECT u.name FROM users u
+WHERE EXISTS (SELECT 1 FROM orders o WHERE o.user_id = u.id AND o.status = 'cancelled');   -- Глеб
+
+-- пользователи без заказов — безопасно при NULL
+SELECT u.name FROM users u
+WHERE NOT EXISTS (SELECT 1 FROM orders o WHERE o.user_id = u.id);   -- Вера, Дина
+
+-- самый дорогой заказ каждого пользователя
+SELECT o.user_id, o.id, o.amount FROM orders o
+WHERE o.amount = (SELECT MAX(o2.amount) FROM orders o2 WHERE o2.user_id = o.user_id);
+-- 1 | 2 | 1500,  2 | 3 | 700,  4 | 5 | 1200</pre>
+        <p class="note">Коррелированный подзапрос ссылается на строку внешнего (<code>u.id</code>) и логически выполняется для каждой его строки. <code>EXISTS</code> только проверяет «есть ли хоть одна строка» и останавливается на первой найденной, поэтому внутри пишут <code>SELECT 1</code> — столбцы не важны.</p>
+      </div></details>
+
+      <details class="section"><summary><span class="badge b-pink">4</span> Подзапрос в FROM <span class="chev">▶</span></summary><div class="section-body">
+<pre class="code" data-lang="sql">-- средняя сумма покупок на одного покупателя
+SELECT AVG(total) FROM (
+  SELECT user_id, SUM(amount) AS total
+  FROM orders GROUP BY user_id
+) t;                                  -- (2000 + 900 + 1500) / 3 = 1466.67</pre>
+        <p class="note">Подзапросу в <code>FROM</code> (производной таблице) в большинстве СУБД обязательно нужен псевдоним — здесь <code>t</code>.</p>
+      </div></details>
+
+      <details class="section"><summary><span class="badge b-pink">5</span> CTE: WITH <span class="chev">▶</span></summary><div class="section-body">
+<pre class="code" data-lang="sql">WITH totals AS (
+  SELECT user_id, SUM(amount) AS total
+  FROM orders
+  WHERE status = 'paid'
+  GROUP BY user_id
+),
+vip AS (
+  SELECT user_id FROM totals WHERE total &gt;= 1200
+)
+SELECT u.name, t.total
+FROM vip
+JOIN totals t ON t.user_id = vip.user_id
+JOIN users u  ON u.id = vip.user_id;     -- Анна | 2000, Глеб | 1200</pre>
+        <p class="note">CTE читается как рецепт: «сначала посчитай суммы, потом отбери VIP, потом покажи имена». Одну CTE можно использовать несколько раз, а следующая может ссылаться на предыдущую.</p>
+        <h3 class="sub">Рекурсивная CTE</h3>
+<pre class="code" data-lang="sql">-- числа от 1 до 5 (генератор последовательности)
+WITH RECURSIVE n(x) AS (
+  SELECT 1                       -- якорь: стартовая строка
+  UNION ALL
+  SELECT x + 1 FROM n WHERE x &lt; 5 -- шаг: из предыдущих строк получаем новые
+)
+SELECT x FROM n;                 -- 1, 2, 3, 4, 5</pre>
+        <p class="note">Рекурсия нужна для деревьев: категории с подкатегориями, оргструктура, комментарии с ответами. Без условия остановки запрос будет работать бесконечно.</p>
+      </div></details>
+    </div>
+  </details>
+
+  <!-- ==================== ОКОННЫЕ ФУНКЦИИ ==================== -->
+  <details class="section" id="s-window">
+    <summary><span class="badge b-purple">OVER</span> Оконные функции <span class="chev">▶</span></summary>
+    <div class="section-body">
+      <p class="note">Оконная функция считает что-то по группе строк, но, в отличие от <code>GROUP BY</code>, <b>не сворачивает</b> строки: каждая строка остаётся на месте и получает рядом вычисленное значение. Как если бы в Excel в каждой строке была формула «сумма по моему клиенту».</p>
+<pre class="code" data-lang="sql">функция() OVER (
+  PARTITION BY ...   -- на какие группы делить (необязательно; без него — вся таблица одно окно)
+  ORDER BY ...       -- порядок внутри группы (нужен для нумерации, накопления, LAG/LEAD)
+)</pre>
+
+      <details class="section"><summary><span class="badge b-purple">1</span> Агрегат без схлопывания <span class="chev">▶</span></summary><div class="section-body">
+<pre class="code" data-lang="sql">SELECT id, user_id, amount,
+       SUM(amount) OVER (PARTITION BY user_id) AS user_total,
+       COUNT(*)    OVER ()                     AS all_cnt
+FROM orders ORDER BY id;
+-- 1 | 1 | 500  | 2000 | 6
+-- 2 | 1 | 1500 | 2000 | 6
+-- 3 | 2 | 700  | 900  | 6
+-- 4 | 4 | 300  | 1500 | 6
+-- 5 | 4 | 1200 | 1500 | 6
+-- 6 | 2 | 200  | 900  | 6</pre>
+      </div></details>
+
+      <details class="section"><summary><span class="badge b-purple">2</span> Нумерация: ROW_NUMBER, RANK, DENSE_RANK <span class="chev">▶</span></summary><div class="section-body">
+<pre class="code" data-lang="sql">SELECT name, score,
+       ROW_NUMBER() OVER (ORDER BY score DESC) AS rn,
+       RANK()       OVER (ORDER BY score DESC) AS rnk,
+       DENSE_RANK() OVER (ORDER BY score DESC) AS drnk
+FROM results;
+-- A | 100 | 1 | 1 | 1
+-- B |  90 | 2 | 2 | 2
+-- C |  90 | 3 | 2 | 2   ← одинаковые баллы
+-- D |  80 | 4 | 4 | 3   ← RANK пропускает 3, DENSE_RANK — нет</pre>
+        <div class="vs-grid">
+          <div class="vs-card"><h4><code>ROW_NUMBER</code></h4><p>1, 2, 3, 4 — всегда уникальный номер. При равенстве порядок случайный.</p></div>
+          <div class="vs-card"><h4><code>RANK</code></h4><p>1, 2, 2, 4 — равным одинаковое место, следующие места пропускаются (как в спорте).</p></div>
+          <div class="vs-card"><h4><code>DENSE_RANK</code></h4><p>1, 2, 2, 3 — без пропусков. Удобно для «N-й по величине зарплаты».</p></div>
+        </div>
+<pre class="code" data-lang="sql">-- топ-1 заказ каждого пользователя (классическая задача)
+SELECT user_id, id, amount FROM (
+  SELECT o.*, ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY amount DESC) AS rn
+  FROM orders o
+) t
+WHERE rn = 1;                     -- 1 | 2 | 1500,  2 | 3 | 700,  4 | 5 | 1200</pre>
+        <p class="note">Оконную функцию нельзя писать в <code>WHERE</code> (она вычисляется на шаге <code>SELECT</code>), поэтому фильтр — во внешнем запросе или CTE.</p>
+      </div></details>
+
+      <details class="section"><summary><span class="badge b-purple">3</span> Накопительный итог, LAG / LEAD <span class="chev">▶</span></summary><div class="section-body">
+<pre class="code" data-lang="sql">SELECT created_at, amount,
+       SUM(amount) OVER (ORDER BY created_at)       AS running_total,
+       LAG(amount)  OVER (ORDER BY created_at)      AS prev_amount,
+       amount - LAG(amount) OVER (ORDER BY created_at) AS diff
+FROM orders;
+-- 2026-01-10 | 500  | 500  | NULL | NULL
+-- 2026-02-03 | 1500 | 2000 | 500  | 1000
+-- 2026-02-15 | 700  | 2700 | 1500 | -800
+-- 2026-03-01 | 300  | 3000 | 700  | -400
+-- 2026-03-20 | 1200 | 4200 | 300  | 900
+-- 2026-03-25 | 200  | 4400 | 1200 | -1000</pre>
+        <p class="note"><code>LAG</code> — значение из предыдущей строки, <code>LEAD</code> — из следующей. Для первой строки предыдущей нет — <code>NULL</code> (можно задать значение по умолчанию: <code>LAG(amount, 1, 0)</code>). Когда в окне есть <code>ORDER BY</code>, <code>SUM</code> по умолчанию считает «от начала до текущей строки» — отсюда накопительный итог.</p>
+      </div></details>
+    </div>
+  </details>
+
+  <!-- ==================== DML ==================== -->
+  <details class="section" id="s-dml">
+    <summary><span class="badge b-red">DML</span> INSERT, UPDATE, DELETE <span class="chev">▶</span></summary>
+    <div class="section-body">
+      <p class="note">Команды, которые меняют строки. Главное правило безопасности: <code>UPDATE</code> и <code>DELETE</code> без <code>WHERE</code> затрагивают <b>всю таблицу</b>. Перед изменением выполните тот же запрос как <code>SELECT</code> и посмотрите, какие строки попадут.</p>
+
+      <details class="section"><summary><span class="badge b-red">1</span> INSERT — добавить <span class="chev">▶</span></summary><div class="section-body">
+<pre class="code" data-lang="sql">INSERT INTO users (name, city, age) VALUES ('Егор', 'Тула', 31);   -- id подставится сам
+INSERT INTO users (name, city) VALUES                              -- несколько строк сразу
+  ('Жанна', 'Омск'),
+  ('Зоя', NULL);                                                   -- age не указан → NULL (или DEFAULT)
+INSERT INTO archive_orders (id, amount)                            -- вставить результат запроса
+SELECT id, amount FROM orders WHERE created_at &lt; '2026-02-01';
+INSERT INTO users (name) VALUES ('Ия') RETURNING id;               -- PostgreSQL/SQLite: сразу получить новый id</pre>
+        <p class="note">Всегда перечисляйте столбцы: <code>INSERT INTO users VALUES (...)</code> без списка сломается, когда в таблицу добавят столбец.</p>
+      </div></details>
+
+      <details class="section"><summary><span class="badge b-red">2</span> UPDATE — изменить <span class="chev">▶</span></summary><div class="section-body">
+<pre class="code" data-lang="sql">UPDATE orders SET status = 'paid' WHERE id = 3;                  -- одна строка
+UPDATE users SET city = 'Москва', age = age + 1 WHERE id = 5;    -- несколько столбцов
+UPDATE orders SET amount = amount * 0.9 WHERE status = 'new';    -- скидка 10% всем новым
+UPDATE orders SET status = 'cancelled';                          -- !!! ВСЕ заказы отменены</pre>
+<pre class="code" data-lang="sql">-- безопасный приём: сначала SELECT с тем же WHERE
+SELECT * FROM orders WHERE status = 'new' AND created_at &lt; '2026-03-01';   -- 1 строка, ок
+BEGIN;
+UPDATE orders SET status = 'cancelled' WHERE status = 'new' AND created_at &lt; '2026-03-01';
+-- проверили результат → COMMIT;  что-то не так → ROLLBACK;</pre>
+      </div></details>
+
+      <details class="section"><summary><span class="badge b-red">3</span> DELETE, TRUNCATE, DROP <span class="chev">▶</span></summary><div class="section-body">
+<pre class="code" data-lang="sql">DELETE FROM orders WHERE status = 'cancelled';   -- удалить подходящие строки
+DELETE FROM orders;                              -- удалить все строки (таблица остаётся)
+TRUNCATE TABLE orders;                           -- быстро очистить таблицу целиком
+DROP TABLE orders;                               -- удалить саму таблицу вместе со структурой</pre>
+        <div class="table-scroll"><table class="tbl">
+          <thead><tr><th></th><th><code>DELETE</code></th><th><code>TRUNCATE</code></th><th><code>DROP</code></th></tr></thead>
+          <tbody>
+            <tr><td>Группа</td><td>DML</td><td>DDL</td><td>DDL</td></tr>
+            <tr><td>Что удаляет</td><td>Строки по условию</td><td>Все строки</td><td>Таблицу целиком</td></tr>
+            <tr><td><code>WHERE</code></td><td class="yes">да</td><td class="no">нет</td><td class="no">нет</td></tr>
+            <tr><td>Скорость на больших таблицах</td><td class="mid">медленно, построчно</td><td class="yes">мгновенно</td><td class="yes">мгновенно</td></tr>
+            <tr><td>Триггеры на удаление</td><td class="yes">срабатывают</td><td class="no">нет</td><td class="no">нет</td></tr>
+            <tr><td>Счётчик автоинкремента</td><td>Продолжается</td><td>Обычно сбрасывается</td><td>—</td></tr>
+            <tr><td>Откат <code>ROLLBACK</code></td><td class="yes">да</td><td class="mid">PostgreSQL — да, MySQL/Oracle — нет</td><td class="mid">так же</td></tr>
+          </tbody>
+        </table></div>
+        <p class="note">Мягкое удаление (soft delete): вместо <code>DELETE</code> ставят флаг <code>deleted_at = now()</code>, а все запросы фильтруют <code>WHERE deleted_at IS NULL</code>. Данные можно восстановить, история сохраняется.</p>
+      </div></details>
+
+      <details class="section"><summary><span class="badge b-red">4</span> UPSERT — вставить или обновить <span class="chev">▶</span></summary><div class="section-body">
+<pre class="code" data-lang="sql">-- PostgreSQL / SQLite: если такой email уже есть — обновить имя
+INSERT INTO users (email, name) VALUES ('a@x.ru', 'Анна')
+ON CONFLICT (email) DO UPDATE SET name = EXCLUDED.name;
+
+-- MySQL
+INSERT INTO users (email, name) VALUES ('a@x.ru', 'Анна')
+ON DUPLICATE KEY UPDATE name = VALUES(name);
+
+-- стандарт SQL, SQL Server, Oracle, PostgreSQL 15+: MERGE</pre>
+        <div class="qa-block"><p class="qa-title">Для QA</p><ul>
+          <li>Тестовые данные удобно готовить скриптом <code>INSERT</code> и убирать за собой <code>DELETE ... WHERE name LIKE 'autotest_%'</code> — помечайте свои записи префиксом.</li>
+          <li>Ещё надёжнее — тест внутри транзакции с <code>ROLLBACK</code> в конце: база вернётся в исходное состояние.</li>
+          <li>Проверяйте поведение повторной отправки формы/запроса: создаётся дубль или срабатывает уникальность/UPSERT (идемпотентность).</li>
+        </ul></div>
+      </div></details>
+    </div>
+  </details>
+
+  <!-- ==================== DDL ==================== -->
+  <details class="section" id="s-ddl">
+    <summary><span class="badge b-gray">DDL</span> Таблицы, типы, ключи и ограничения <span class="chev">▶</span></summary>
+    <div class="section-body">
+      <p class="note">DDL описывает структуру: какие таблицы, какие у них столбцы и типы, какие правила обязаны соблюдать данные. Ограничения (constraints) — это защита на уровне базы: даже если приложение с багом попробует записать мусор, база откажет.</p>
+
+      <details class="section"><summary><span class="badge b-gray">1</span> CREATE TABLE <span class="chev">▶</span></summary><div class="section-body">
+<pre class="code" data-lang="sql">CREATE TABLE users (
+  id         SERIAL PRIMARY KEY,                 -- автоинкремент (PostgreSQL); MySQL: INT AUTO_INCREMENT
+  email      VARCHAR(255) NOT NULL UNIQUE,       -- обязательный и уникальный
+  name       VARCHAR(100) NOT NULL,
+  age        INT CHECK (age BETWEEN 0 AND 150),  -- проверка значения
+  balance    NUMERIC(12, 2) NOT NULL DEFAULT 0,  -- деньги: точный тип, по умолчанию 0
+  is_active  BOOLEAN NOT NULL DEFAULT TRUE,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE orders (
+  id      SERIAL PRIMARY KEY,
+  user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,   -- внешний ключ
+  amount  NUMERIC(12, 2) NOT NULL CHECK (amount &gt; 0),
+  status  VARCHAR(20) NOT NULL DEFAULT 'new'
+);</pre>
+      </div></details>
+
+      <details class="section"><summary><span class="badge b-gray">2</span> Ограничения <span class="chev">▶</span></summary><div class="section-body">
+        <div class="table-scroll"><table class="tbl">
+          <thead><tr><th>Ограничение</th><th>Гарантирует</th><th>Ошибка при нарушении (пример)</th></tr></thead>
+          <tbody>
+            <tr class="hot"><td><code>PRIMARY KEY</code></td><td>Уникальный и не-NULL идентификатор строки. Один на таблицу (может быть составным)</td><td>duplicate key value violates unique constraint</td></tr>
+            <tr class="hot"><td><code>FOREIGN KEY</code> / <code>REFERENCES</code></td><td>Значение существует в другой таблице</td><td>violates foreign key constraint</td></tr>
+            <tr><td><code>UNIQUE</code></td><td>Нет повторов (может быть несколько на таблицу)</td><td>duplicate key value</td></tr>
+            <tr><td><code>NOT NULL</code></td><td>Значение обязательно</td><td>null value in column violates not-null constraint</td></tr>
+            <tr><td><code>CHECK</code></td><td>Значение удовлетворяет условию</td><td>violates check constraint</td></tr>
+            <tr><td><code>DEFAULT</code></td><td>Значение, если не передали (не ограничение, но рядом)</td><td>—</td></tr>
+          </tbody>
+        </table></div>
+        <h3 class="sub">Что делать с заказами, если удалили пользователя</h3>
+        <div class="table-scroll"><table class="tbl">
+          <thead><tr><th>Правило внешнего ключа</th><th>Поведение</th></tr></thead>
+          <tbody>
+            <tr><td><code>ON DELETE RESTRICT</code> / <code>NO ACTION</code> (по умолчанию)</td><td>Запретить удаление, пока есть заказы</td></tr>
+            <tr><td><code>ON DELETE CASCADE</code></td><td>Удалить заказы вместе с пользователем</td></tr>
+            <tr><td><code>ON DELETE SET NULL</code></td><td>Оставить заказы, <code>user_id</code> станет <code>NULL</code></td></tr>
+          </tbody>
+        </table></div>
+        <div class="vs-grid">
+          <div class="vs-card"><h4>Первичный ключ</h4><p>«Паспорт» строки: <code>users.id</code>. Обычно суррогатный — число или UUID без смысла, а не email или телефон (они меняются).</p></div>
+          <div class="vs-card"><h4>Внешний ключ</h4><p>Ссылка на паспорт в другой таблице: <code>orders.user_id → users.id</code>. Не даёт создать заказ несуществующему пользователю.</p></div>
+        </div>
+      </div></details>
+
+      <details class="section"><summary><span class="badge b-gray">3</span> Типы данных <span class="chev">▶</span></summary><div class="section-body">
+        <div class="table-scroll"><table class="tbl">
+          <thead><tr><th>Тип</th><th>Для чего</th><th>Нюанс</th></tr></thead>
+          <tbody>
+            <tr><td><code>INT</code>, <code>BIGINT</code>, <code>SMALLINT</code></td><td>Целые</td><td><code>INT</code> до ~2,1 млрд — id больших таблиц переполняются, берут <code>BIGINT</code></td></tr>
+            <tr class="hot"><td><code>NUMERIC(p, s)</code> / <code>DECIMAL</code></td><td>Деньги, точные дроби</td><td><code>NUMERIC(12,2)</code>: 12 цифр всего, 2 после запятой</td></tr>
+            <tr><td><code>REAL</code>, <code>FLOAT</code>, <code>DOUBLE</code></td><td>Приблизительные дроби</td><td><code>0.1 + 0.2 ≠ 0.3</code> — для денег нельзя</td></tr>
+            <tr><td><code>VARCHAR(n)</code></td><td>Строка до n символов</td><td>Длиннее — ошибка (или обрезка в старом MySQL)</td></tr>
+            <tr><td><code>CHAR(n)</code></td><td>Строка ровно n символов</td><td>Дополняется пробелами</td></tr>
+            <tr><td><code>TEXT</code></td><td>Длинный текст</td><td>Без ограничения длины</td></tr>
+            <tr><td><code>BOOLEAN</code></td><td>Да / нет</td><td>В MySQL это <code>TINYINT(1)</code>: 0/1</td></tr>
+            <tr><td><code>DATE</code>, <code>TIME</code></td><td>Дата, время</td><td>Формат ввода: <code>'2026-03-20'</code></td></tr>
+            <tr class="hot"><td><code>TIMESTAMP</code> / <code>TIMESTAMPTZ</code></td><td>Дата и время</td><td>С часовым поясом или без — частый источник багов «±3 часа»</td></tr>
+            <tr><td><code>UUID</code>, <code>JSON</code>/<code>JSONB</code></td><td>Идентификаторы, документы</td><td>PostgreSQL: <code>data-&gt;&gt;'key'</code> — значение из JSON</td></tr>
+          </tbody>
+        </table></div>
+        <p class="legend-hot">★ — тут чаще всего ошибаются</p>
+      </div></details>
+
+      <details class="section"><summary><span class="badge b-gray">4</span> ALTER и DROP <span class="chev">▶</span></summary><div class="section-body">
+<pre class="code" data-lang="sql">ALTER TABLE users ADD COLUMN phone VARCHAR(20);            -- добавить столбец (у старых строк — NULL)
+ALTER TABLE users DROP COLUMN phone;                       -- удалить столбец
+ALTER TABLE users RENAME COLUMN name TO full_name;         -- переименовать
+ALTER TABLE users ALTER COLUMN age SET NOT NULL;           -- PostgreSQL; упадёт, если уже есть NULL
+ALTER TABLE orders ADD CONSTRAINT chk_amount CHECK (amount &gt; 0);
+DROP TABLE IF EXISTS tmp_import;                           -- без ошибки, если таблицы нет</pre>
+        <div class="qa-block"><p class="qa-title">Для QA</p><ul>
+          <li>Проверка ограничений — граничные значения: пустая строка, <code>NULL</code>, строка длиной n и n+1 для <code>VARCHAR(n)</code>, 0 и отрицательные для <code>CHECK (amount &gt; 0)</code>, дубль для <code>UNIQUE</code>.</li>
+          <li>Ошибка базы не должна долетать до пользователя как «500 + текст SQL». Ожидается понятное сообщение и корректный код ответа (409 на дубль, 400/422 на невалидные данные).</li>
+          <li>Миграции: после <code>ALTER</code> старые данные должны остаться корректными — проверяйте новый столбец у существующих строк.</li>
+        </ul></div>
+      </div></details>
+
+      <details class="section"><summary><span class="badge b-gray">5</span> Нормализация и связи <span class="chev">▶</span></summary><div class="section-body">
+        <p class="note">Нормализация — раскладка данных так, чтобы каждый факт хранился в одном месте. Если имя клиента записано в каждом его заказе, при смене имени придётся править десятки строк, и где-нибудь забудут — данные разойдутся (аномалия обновления).</p>
+        <div class="vs-grid">
+          <div class="vs-card"><h4>1НФ</h4><p>В ячейке одно значение: не <code>phones = '111, 222'</code>, а отдельная таблица телефонов.</p></div>
+          <div class="vs-card"><h4>2НФ</h4><p>1НФ + каждый неключевой столбец зависит от всего составного ключа, а не от его части.</p></div>
+          <div class="vs-card"><h4>3НФ</h4><p>2НФ + неключевые столбцы не зависят друг от друга: город клиента — в <code>users</code>, а не в <code>orders</code>.</p></div>
+        </div>
+        <div class="table-scroll"><table class="tbl">
+          <thead><tr><th>Связь</th><th>Пример</th><th>Как устроена</th></tr></thead>
+          <tbody>
+            <tr><td>Один к одному</td><td>Пользователь — профиль</td><td>FK + <code>UNIQUE</code> во второй таблице</td></tr>
+            <tr class="hot"><td>Один ко многим</td><td>Пользователь — заказы</td><td>FK в таблице «многих»: <code>orders.user_id</code></td></tr>
+            <tr><td>Многие ко многим</td><td>Заказы — товары</td><td>Связующая таблица <code>order_items(order_id, product_id)</code></td></tr>
+          </tbody>
+        </table></div>
+        <p class="note">Денормализация — сознательное дублирование ради скорости чтения (например, хранить <code>orders_count</code> у пользователя). Тогда появляется риск рассинхрона, и это хорошее место для проверок QA.</p>
+      </div></details>
+    </div>
+  </details>
+
+  <!-- ==================== ИНДЕКСЫ И ТРАНЗАКЦИИ ==================== -->
+  <details class="section" id="s-index">
+    <summary><span class="badge b-teal">⚡</span> Индексы и транзакции <span class="chev">▶</span></summary>
+    <div class="section-body">
+
+      <details class="section"><summary><span class="badge b-teal">1</span> Индекс — оглавление таблицы <span class="chev">▶</span></summary><div class="section-body">
+        <p class="note">Без индекса поиск <code>WHERE email = 'a@x.ru'</code> — это чтение всей таблицы подряд (full scan), как поиск слова в книге без предметного указателя. Индекс — отсортированная структура (обычно B-дерево), по которой нужная строка находится за несколько шагов даже среди миллионов.</p>
+<pre class="code" data-lang="sql">CREATE INDEX idx_orders_user ON orders(user_id);                -- обычный
+CREATE UNIQUE INDEX idx_users_email ON users(email);            -- ещё и запрещает дубли
+CREATE INDEX idx_orders_user_date ON orders(user_id, created_at); -- составной
+DROP INDEX idx_orders_user;</pre>
+        <div class="vs-grid">
+          <div class="vs-card"><h4>Плюсы</h4><p>Быстрые <code>WHERE</code>, <code>JOIN</code>, <code>ORDER BY</code> по индексированным столбцам. <code>PRIMARY KEY</code> и <code>UNIQUE</code> создают индекс автоматически.</p></div>
+          <div class="vs-card"><h4>Минусы</h4><p>Занимают место и замедляют <code>INSERT</code>/<code>UPDATE</code>/<code>DELETE</code>: при каждом изменении индекс тоже нужно обновить. Индексировать всё подряд — плохо.</p></div>
+        </div>
+        <h3 class="sub">Когда индекс НЕ используется</h3>
+        <ul class="checks">
+          <li>Функция над столбцом: <code>WHERE LOWER(email) = ...</code>, <code>WHERE YEAR(created_at) = 2026</code> (нужен функциональный индекс или условие-диапазон).</li>
+          <li><code>LIKE '%abc'</code> — шаблон начинается с <code>%</code>.</li>
+          <li>Составной индекс <code>(user_id, created_at)</code>, а фильтр только по <code>created_at</code> — работает правило «левого префикса».</li>
+          <li>Неявное приведение типов: столбец строковый, а сравниваем с числом.</li>
+          <li>Маленькая таблица или условие подходит большинству строк — полный просмотр дешевле.</li>
+        </ul>
+<pre class="code" data-lang="sql">EXPLAIN SELECT * FROM orders WHERE user_id = 1;           -- план: Index Scan или Seq Scan?
+EXPLAIN ANALYZE SELECT * FROM orders WHERE user_id = 1;   -- PostgreSQL: выполнить и показать реальное время
+EXPLAIN QUERY PLAN SELECT * FROM orders WHERE user_id = 1; -- SQLite</pre>
+      </div></details>
+
+      <details class="section"><summary><span class="badge b-teal">2</span> Транзакции и ACID <span class="chev">▶</span></summary><div class="section-body">
+        <p class="note">Транзакция — группа операций, которая выполняется целиком или не выполняется вовсе. Классика — перевод денег: списать с одного счёта и зачислить на другой. Если после списания сервер упал, без транзакции деньги просто исчезнут.</p>
+<pre class="code" data-lang="sql">BEGIN;                                                    -- START TRANSACTION в MySQL
+UPDATE accounts SET balance = balance - 500 WHERE id = 1;
+UPDATE accounts SET balance = balance + 500 WHERE id = 2;
+COMMIT;                                                   -- зафиксировать оба изменения
+-- при ошибке: ROLLBACK;                                  -- отменить всё с момента BEGIN
+
+BEGIN;
+INSERT INTO orders ...;
+SAVEPOINT sp1;                                            -- точка сохранения
+UPDATE ...;
+ROLLBACK TO sp1;                                          -- откатить только UPDATE
+COMMIT;</pre>
+        <div class="table-scroll"><table class="tbl">
+          <thead><tr><th>Буква</th><th>Свойство</th><th>Простыми словами</th></tr></thead>
+          <tbody>
+            <tr><td><b>A</b></td><td>Atomicity — атомарность</td><td>Всё или ничего</td></tr>
+            <tr><td><b>C</b></td><td>Consistency — согласованность</td><td>После транзакции все ограничения соблюдены (нет отрицательных балансов, висячих FK)</td></tr>
+            <tr><td><b>I</b></td><td>Isolation — изолированность</td><td>Параллельные транзакции не мешают друг другу (насколько — задаёт уровень изоляции)</td></tr>
+            <tr><td><b>D</b></td><td>Durability — долговечность</td><td>После <code>COMMIT</code> данные не пропадут даже при отключении питания</td></tr>
+          </tbody>
+        </table></div>
+        <p class="note">Режим автофиксации (autocommit): в большинстве клиентов каждая команда без явного <code>BEGIN</code> сразу фиксируется — откатить её уже нельзя. А вот в некоторых клиентах (Oracle SQL Developer, DBeaver в ручном режиме) наоборот: пока не сделали <code>COMMIT</code>, другие ваших изменений не видят.</p>
+      </div></details>
+
+      <details class="section"><summary><span class="badge b-teal">3</span> Уровни изоляции и аномалии <span class="chev">▶</span></summary><div class="section-body">
+        <div class="table-scroll"><table class="tbl">
+          <thead><tr><th>Уровень</th><th>Грязное чтение</th><th>Неповторяющееся чтение</th><th>Фантомы</th></tr></thead>
+          <tbody>
+            <tr><td><code>READ UNCOMMITTED</code></td><td class="no">возможно</td><td class="no">возможно</td><td class="no">возможно</td></tr>
+            <tr class="hot"><td><code>READ COMMITTED</code> (по умолчанию в PostgreSQL, Oracle, SQL Server)</td><td class="yes">нет</td><td class="no">возможно</td><td class="no">возможно</td></tr>
+            <tr><td><code>REPEATABLE READ</code> (по умолчанию в MySQL InnoDB)</td><td class="yes">нет</td><td class="yes">нет</td><td class="mid">возможно по стандарту</td></tr>
+            <tr><td><code>SERIALIZABLE</code></td><td class="yes">нет</td><td class="yes">нет</td><td class="yes">нет</td></tr>
+          </tbody>
+        </table></div>
+        <div class="vs-grid">
+          <div class="vs-card"><h4>Грязное чтение</h4><p>Видим чужие незафиксированные изменения, а потом их откатили — мы работали с данными, которых «не было».</p></div>
+          <div class="vs-card"><h4>Неповторяющееся чтение</h4><p>Прочитали строку дважды в одной транзакции, а между чтениями её изменили и зафиксировали — значения разные.</p></div>
+          <div class="vs-card"><h4>Фантомы</h4><p>Повторный <code>SELECT ... WHERE</code> вернул новые строки, которые кто-то вставил между запросами.</p></div>
+          <div class="vs-card"><h4>Потерянное обновление</h4><p>Два процесса прочитали баланс 100, каждый прибавил 50 и записал 150 — одно пополнение потеряно. Лечится <code>UPDATE ... SET b = b + 50</code>, <code>SELECT ... FOR UPDATE</code> или версией строки.</p></div>
+        </div>
+        <p class="note">Взаимоблокировка (deadlock): транзакция A держит строку 1 и ждёт строку 2, транзакция B — наоборот. СУБД обнаруживает цикл и откатывает одну из них с ошибкой.</p>
+        <div class="qa-block"><p class="qa-title">Для QA</p><ul>
+          <li>Гонки проверяют параллельными запросами: двойной клик «Оплатить», два одновременных списания с одного баланса, покупка последнего товара двумя пользователями.</li>
+          <li>Если при ошибке на середине операции часть данных записалась (заказ есть, а оплаты нет) — это баг атомарности.</li>
+          <li>Медленный экран → попросите <code>EXPLAIN</code> запроса или проверьте, есть ли индекс по столбцу фильтра.</li>
+        </ul></div>
+      </div></details>
+    </div>
+  </details>
+
+  <!-- ==================== ФУНКЦИИ ==================== -->
+  <details class="section" id="s-func">
+    <summary><span class="badge b-green">f()</span> Функции: CASE, строки, даты, типы <span class="chev">▶</span></summary>
+    <div class="section-body">
+      <p class="note">Набор встроенных функций сильнее всего отличается между СУБД. Ниже — самое ходовое; если не сработало, ищите аналог для своей базы.</p>
+
+      <details class="section"><summary><span class="badge b-green">1</span> CASE — if/else в запросе <span class="chev">▶</span></summary><div class="section-body">
+<pre class="code" data-lang="sql">SELECT name, age,
+  CASE
+    WHEN age IS NULL THEN 'неизвестно'
+    WHEN age &lt; 30    THEN 'до 30'
+    ELSE '30+'
+  END AS age_group
+FROM users;
+-- Анна 28 до 30, Борис 35 30+, Вера NULL неизвестно, Глеб 42 30+, Дина 19 до 30
+
+-- условная агрегация: несколько счётчиков за один проход
+SELECT
+  COUNT(*)                                          AS all_orders,  -- 6
+  SUM(CASE WHEN status = 'paid' THEN 1 ELSE 0 END)  AS paid,        -- 4
+  SUM(CASE WHEN status = 'paid' THEN amount END)    AS paid_sum     -- 3400
+FROM orders;</pre>
+        <p class="note">Ветки проверяются сверху вниз, срабатывает первая истинная. Без <code>ELSE</code> несовпавшие получат <code>NULL</code>. В PostgreSQL условную агрегацию можно записать короче: <code>COUNT(*) FILTER (WHERE status = 'paid')</code>.</p>
+      </div></details>
+
+      <details class="section"><summary><span class="badge b-green">2</span> Строки <span class="chev">▶</span></summary><div class="section-body">
+<pre class="code" data-lang="sql">SELECT 'Анна' || ' ' || 'Ли';           -- Анна Ли   (стандарт; MySQL: CONCAT('Анна', ' ', 'Ли'))
+SELECT UPPER('qa'), LOWER('QA');        -- QA, qa
+SELECT LENGTH('тест');                  -- 4 (MySQL LENGTH считает байты → 8; символы — CHAR_LENGTH)
+SELECT TRIM('  hi  ');                  -- 'hi'
+SELECT SUBSTR('2026-03-20', 1, 7);      -- 2026-03  (SUBSTRING в PostgreSQL/MySQL/SQL Server)
+SELECT REPLACE('a-b-c', '-', '/');      -- a/b/c
+SELECT INSTR('qa@mail.ru', '@');        -- 3  (POSITION('@' IN ...) в PostgreSQL)</pre>
+      </div></details>
+
+      <details class="section"><summary><span class="badge b-green">3</span> Даты <span class="chev">▶</span></summary><div class="section-body">
+<pre class="code" data-lang="sql">SELECT CURRENT_DATE, CURRENT_TIMESTAMP;              -- везде
+SELECT NOW();                                        -- PostgreSQL, MySQL
+SELECT created_at + INTERVAL '7 days' FROM orders;   -- PostgreSQL (MySQL: + INTERVAL 7 DAY)
+SELECT date(created_at, '+7 days') FROM orders;      -- SQLite
+SELECT EXTRACT(YEAR FROM created_at) FROM orders;    -- PostgreSQL/MySQL: 2026
+SELECT DATE_TRUNC('month', created_at) FROM orders;  -- PostgreSQL: начало месяца
+SELECT strftime('%Y-%m', created_at) AS month, SUM(amount)   -- SQLite: выручка по месяцам
+FROM orders GROUP BY month;                          -- 2026-01 | 500, 2026-02 | 2200, 2026-03 | 1700</pre>
+        <div class="neg-block"><p class="neg-title">✕ Даты и часовые пояса</p><ol>
+          <li>В базе время обычно в UTC, в интерфейсе — местное. Заказ в 01:00 по Москве 1 марта лежит в базе как 22:00 28 февраля и попадёт в февральский отчёт.</li>
+          <li>Не сравнивайте даты как строки в разных форматах: <code>'20.03.2026' &gt; '1.04.2026'</code> — строковое сравнение посимвольное. Формат <code>YYYY-MM-DD</code> сортируется правильно.</li>
+        </ol></div>
+      </div></details>
+
+      <details class="section"><summary><span class="badge b-green">4</span> Числа и приведение типов <span class="chev">▶</span></summary><div class="section-body">
+<pre class="code" data-lang="sql">SELECT 7 / 2;                     -- 3  (целочисленное деление в PostgreSQL, SQLite, SQL Server; в MySQL — 3.5)
+SELECT 7 / 2.0;                   -- 3.5
+SELECT CAST(7 AS REAL) / 2;       -- 3.5  (стандарт CAST)
+SELECT 7::numeric / 2;            -- PostgreSQL-сокращение
+SELECT ROUND(733.3333, 2);        -- 733.33
+SELECT 7 % 3;                     -- 1   остаток (MOD(7, 3) в Oracle)
+SELECT ABS(-5);                   -- 5
+SELECT CAST('42' AS INTEGER) + 1; -- 43</pre>
+        <p class="note">Целочисленное деление — частый баг процентов: <code>paid_cnt / all_cnt * 100</code> даст 0 вместо 66, потому что 4 / 6 = 0. Умножайте сначала на <code>100.0</code>.</p>
+      </div></details>
+    </div>
+  </details>
+
+  <!-- ==================== SQL ДЛЯ QA ==================== -->
+  <details class="section" id="s-qa">
+    <summary><span class="badge b-orange">QA</span> SQL для тестировщика <span class="chev">▶</span></summary>
+    <div class="section-body">
+      <p class="note">Готовые запросы, которые закрывают типичные проверки данных. Подставьте свои таблицы и столбцы. Хорошая проверка — запрос, который при отсутствии бага возвращает <b>0 строк</b>: его легко превратить в автотест.</p>
+
+      <details class="section"><summary><span class="badge b-orange">1</span> Проверка после действия <span class="chev">▶</span></summary><div class="section-body">
+<pre class="code" data-lang="sql">-- зарегистрировали пользователя через UI/API — что реально легло в базу?
+SELECT id, email, status, created_at
+FROM users
+WHERE email = 'autotest_42@example.com';
+
+-- последние записи: что создалось за последние минуты
+SELECT * FROM orders ORDER BY id DESC LIMIT 10;
+
+-- связанные данные создались все (заказ → позиции → платёж)
+SELECT o.id, COUNT(oi.id) AS items, p.status AS payment
+FROM orders o
+LEFT JOIN order_items oi ON oi.order_id = o.id
+LEFT JOIN payments p     ON p.order_id = o.id
+WHERE o.id = 1001
+GROUP BY o.id, p.status;</pre>
+      </div></details>
+
+      <details class="section"><summary><span class="badge b-orange">2</span> Целостность данных <span class="chev">▶</span></summary><div class="section-body">
+<pre class="code" data-lang="sql">-- дубли по полю, которое должно быть уникальным
+SELECT email, COUNT(*) FROM users GROUP BY email HAVING COUNT(*) &gt; 1;
+
+-- «сироты»: заказы несуществующих пользователей (если FK не настроен)
+SELECT o.* FROM orders o LEFT JOIN users u ON u.id = o.user_id WHERE u.id IS NULL;
+
+-- пустые обязательные поля
+SELECT id FROM users WHERE email IS NULL OR TRIM(email) = '';
+
+-- недопустимые значения статусов
+SELECT DISTINCT status FROM orders WHERE status NOT IN ('new', 'paid', 'cancelled');
+
+-- нарушение бизнес-правил: оплачен, но без даты оплаты; дата окончания раньше начала
+SELECT id FROM orders WHERE status = 'paid' AND paid_at IS NULL;
+SELECT id FROM promo WHERE ends_at &lt; starts_at;
+
+-- денормализованный счётчик разошёлся с реальным количеством
+SELECT u.id, u.orders_count, COUNT(o.id) AS real_count
+FROM users u LEFT JOIN orders o ON o.user_id = u.id
+GROUP BY u.id, u.orders_count
+HAVING u.orders_count &lt;&gt; COUNT(o.id);</pre>
+      </div></details>
+
+      <details class="section"><summary><span class="badge b-orange">3</span> Сверка двух источников <span class="chev">▶</span></summary><div class="section-body">
+<pre class="code" data-lang="sql">-- количество и сумма совпадают? (до/после миграции, источник/выгрузка)
+SELECT COUNT(*), SUM(amount) FROM orders;
+SELECT COUNT(*), SUM(amount) FROM orders_export;
+
+-- какие строки есть в источнике, но не доехали
+SELECT id, amount FROM orders
+EXCEPT
+SELECT id, amount FROM orders_export;</pre>
+      </div></details>
+
+      <details class="section"><summary><span class="badge b-orange">4</span> SQL-инъекции <span class="chev">▶</span></summary><div class="section-body">
+        <p class="note">SQL-инъекция возникает, когда приложение склеивает запрос из строки пользователя. Ввод становится частью кода запроса и меняет его смысл.</p>
+<pre class="code" data-lang="sql">-- приложение делает: "SELECT * FROM users WHERE login = '" + login + "' AND pass = '" + pass + "'"
+-- пользователь вводит в логин:   admin' --
+SELECT * FROM users WHERE login = 'admin' --' AND pass = '...'
+-- всё после -- стало комментарием: вход без пароля
+
+-- ввод:   ' OR '1'='1
+SELECT * FROM users WHERE login = '' OR '1'='1' AND pass = '' OR '1'='1'
+-- условие истинно для всех строк</pre>
+        <div class="vs-grid">
+          <div class="vs-card"><h4>Как защищаются</h4><p>Параметризованные запросы (prepared statements): <code>WHERE login = ?</code>, значение передаётся отдельно и никогда не становится кодом. ORM делает это сам.</p></div>
+          <div class="vs-card"><h4>Как проверяет QA</h4><p>В поля ввода, параметры URL и JSON — <code>'</code>, <code>"</code>, <code>' OR '1'='1</code>, <code>'; --</code>. Тревожные признаки: ошибка 500 с текстом SQL, изменение выдачи, задержка от <code>pg_sleep(5)</code>/<code>SLEEP(5)</code>.</p></div>
+        </div>
+        <div class="qa-block"><p class="qa-title">Для QA</p><ul>
+          <li>Апостроф в обычных данных (<code>O'Brien</code>, «Д'Артаньян») — законный тест: имя должно сохраниться без ошибки и без искажений.</li>
+          <li>Проверяйте инъекции только на своих стендах и в рамках согласованного тестирования безопасности.</li>
+        </ul></div>
+      </div></details>
+    </div>
+  </details>
+
+  <!-- ==================== ЛОВУШКИ ==================== -->
+  <details class="section" id="s-traps">
+    <summary><span class="badge b-red">!</span> Ловушки и частые вопросы <span class="chev">▶</span></summary>
+    <div class="section-body">
+      <div class="table-scroll"><table class="tbl">
+        <thead><tr><th>Код</th><th>Результат</th><th>Почему</th></tr></thead>
+        <tbody>
+          <tr><td><code>WHERE age = NULL</code></td><td>0 строк</td><td>Сравнение с <code>NULL</code> — UNKNOWN. Нужно <code>IS NULL</code></td></tr>
+          <tr class="hot"><td><code>WHERE id NOT IN (1, NULL)</code></td><td>0 строк</td><td><code>id &lt;&gt; NULL</code> — UNKNOWN, всё условие не TRUE</td></tr>
+          <tr><td><code>WHERE city &lt;&gt; 'Москва'</code></td><td>Без строк с <code>NULL</code></td><td>Для <code>NULL</code> условие UNKNOWN</td></tr>
+          <tr><td><code>COUNT(*)</code> vs <code>COUNT(age)</code></td><td>5 и 4</td><td><code>COUNT(col)</code> не считает <code>NULL</code></td></tr>
+          <tr><td><code>SUM(amount)</code> по пустому набору</td><td><code>NULL</code></td><td>Не 0 — нужен <code>COALESCE(SUM(...), 0)</code></td></tr>
+          <tr><td><code>SELECT 7 / 2</code></td><td>3</td><td>Целочисленное деление (кроме MySQL)</td></tr>
+          <tr class="hot"><td><code>LEFT JOIN ... WHERE right.col = 'x'</code></td><td>Как INNER JOIN</td><td>Строки без пары имеют <code>NULL</code> и отсеиваются. Условие — в <code>ON</code></td></tr>
+          <tr><td><code>LEFT JOIN</code> + <code>COUNT(*)</code></td><td>1 у тех, у кого 0</td><td>Строка с <code>NULL</code>-ами тоже строка. Считайте <code>COUNT(right.id)</code></td></tr>
+          <tr><td>Два <code>JOIN</code> «один ко многим» + <code>SUM</code></td><td>Сумма завышена</td><td>Строки перемножились. Агрегируйте до соединения</td></tr>
+          <tr><td><code>WHERE COUNT(*) &gt; 1</code></td><td>Ошибка</td><td>Агрегаты фильтруют в <code>HAVING</code></td></tr>
+          <tr><td>Псевдоним в <code>WHERE</code></td><td>Ошибка (PostgreSQL)</td><td><code>WHERE</code> выполняется раньше <code>SELECT</code></td></tr>
+          <tr><td><code>LIMIT 10</code> без <code>ORDER BY</code></td><td>Случайные 10 строк</td><td>Порядок строк не гарантирован</td></tr>
+          <tr><td><code>UPDATE t SET x = 1</code></td><td>Изменены все строки</td><td>Забыли <code>WHERE</code></td></tr>
+          <tr><td><code>'abc' || NULL</code></td><td><code>NULL</code></td><td>Операции с <code>NULL</code> дают <code>NULL</code></td></tr>
+          <tr><td><code>BETWEEN '2026-02-01' AND '2026-02-28'</code> по timestamp</td><td>Нет записей 28-го после 00:00</td><td>Верхняя граница = полночь. Используйте <code>&lt; '2026-03-01'</code></td></tr>
+        </tbody>
+      </table></div>
+      <p class="legend-hot">★ — любимые вопросы на собеседованиях</p>
+
+      <h3 class="sub">Вопросы с собеседований</h3>
+      <ol class="checks">
+        <li><b>Чем WHERE отличается от HAVING?</b> WHERE фильтрует строки до группировки и не может содержать агрегаты; HAVING фильтрует группы после <code>GROUP BY</code>.</li>
+        <li><b>Виды JOIN и разница INNER / LEFT?</b> INNER — только совпавшие пары; LEFT — все строки левой таблицы, для несовпавших справа <code>NULL</code>. Есть ещё RIGHT, FULL, CROSS, self join.</li>
+        <li><b>DELETE vs TRUNCATE vs DROP?</b> DELETE — строки по условию, построчно, с триггерами; TRUNCATE — быстро все строки; DROP — удаляет таблицу целиком.</li>
+        <li><b>Первичный ключ vs уникальный?</b> PK — один на таблицу, не допускает <code>NULL</code>, идентифицирует строку. UNIQUE — сколько угодно, обычно допускает <code>NULL</code>.</li>
+        <li><b>Что такое внешний ключ?</b> Столбец, значение которого должно существовать в первичном ключе другой таблицы; обеспечивает ссылочную целостность.</li>
+        <li><b>Что такое индекс, плюсы и минусы?</b> Структура для быстрого поиска; ускоряет чтение, замедляет запись и занимает место.</li>
+        <li><b>Расшифруйте ACID.</b> Atomicity, Consistency, Isolation, Durability.</li>
+        <li><b>UNION vs UNION ALL?</b> UNION убирает дубли (дороже), UNION ALL — нет.</li>
+        <li><b>Как найти дубли?</b> <code>GROUP BY поле HAVING COUNT(*) &gt; 1</code>.</li>
+        <li><b>Вторая по величине зарплата?</b> <code>SELECT MAX(salary) FROM emp WHERE salary &lt; (SELECT MAX(salary) FROM emp)</code> или <code>DENSE_RANK() = 2</code>.</li>
+        <li><b>Как найти пользователей без заказов?</b> <code>LEFT JOIN ... WHERE o.id IS NULL</code> или <code>NOT EXISTS</code>; осторожно с <code>NOT IN</code> и <code>NULL</code>.</li>
+        <li><b>Порядок выполнения SELECT?</b> FROM/JOIN → WHERE → GROUP BY → HAVING → SELECT → DISTINCT → ORDER BY → LIMIT.</li>
+        <li><b>Что такое нормализация?</b> Раскладка данных по таблицам без дублирования фактов; 1НФ — атомарные значения, 2НФ — зависимость от всего ключа, 3НФ — нет зависимостей между неключевыми полями.</li>
+        <li><b>Чем оконная функция отличается от GROUP BY?</b> Оконная не схлопывает строки: каждая строка остаётся и получает вычисленное по окну значение.</li>
+        <li><b>Что такое транзакция и уровни изоляции?</b> Группа операций «всё или ничего»; уровни — READ UNCOMMITTED, READ COMMITTED, REPEATABLE READ, SERIALIZABLE — от слабой к полной изоляции.</li>
+        <li><b>Как проверить, что данные из UI сохранились верно?</b> Найти запись по уникальному признаку, сверить каждое поле, связанные таблицы, типы, часовой пояс и отсутствие дублей.</li>
+      </ol>
+    </div>
+  </details>
+
+    </div>
+    <p class="empty" id="refEmpty" hidden>Ничего не найдено</p>
+  </section>
+
+  <!-- ==================== ФЛИПКАРТЫ ==================== -->
+  <section class="view" id="view-cards">
+    <div class="chips" id="fcCats"></div>
+    <div class="controls">
+      <button class="mini-btn" id="fcOnlyNew">Только невыученные</button>
+      <button class="mini-btn" id="fcShuffle">🔀 Перемешать</button>
+      <button class="mini-btn" id="fcReverse">⇄ Ответ → вопрос</button>
+      <button class="mini-btn" id="fcReset">Сбросить прогресс</button>
+    </div>
+    <div class="fc-stats"><span id="fcPos"></span><div class="bar"><i id="fcBar"></i></div><span id="fcKnown"></span></div>
+    <div id="fcArea"></div>
+    <p class="kbd-hint"><kbd>Пробел</kbd> перевернуть · <kbd>←</kbd> <kbd>→</kbd> листать · <kbd>1</kbd> повторить · <kbd>2</kbd> знаю · свайп влево/вправо на тачпаде и телефоне</p>
+  </section>
+
+  <!-- ==================== ТЕСТ ==================== -->
+  <section class="view" id="view-quiz">
+    <div id="quizArea"></div>
+  </section>
+
+  <!-- ==================== ГЛОССАРИЙ ==================== -->
+  <section class="view" id="view-gloss">
+    <div class="panel">
+      <input class="gloss-search" id="glossSearch" type="search" placeholder="Поиск термина: ACID, CTE, индекс…">
+      <div class="table-scroll">
+        <table class="tbl gloss-table">
+          <thead><tr><th>Термин</th><th>Что это</th><th>Суть</th></tr></thead>
+          <tbody id="glossBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <footer>SQL: основы · справочник + флипкарты + тест · сборка 25.11.2026</footer>
+</div>
+<div id="tip" role="tooltip"></div>
+
+<script>
+const SPRAV_CONFIG = {"storeKey": "sql", "codeLang": "sql"};
+/* Словарь терминов для подсказок справочника «SQL: основы» */
+const GLOSSARY = [
+  // ---- основы ----
+  { k: 'SQL', t: 'Structured Query Language — язык структурированных запросов', d: 'Декларативный язык для работы с реляционными базами: описываешь, какой результат нужен, а как его получить — решает СУБД.' },
+  { k: 'СУБД', t: 'Система управления базами данных', d: 'Программа, которая хранит данные и выполняет запросы: PostgreSQL, MySQL, SQL Server, Oracle, SQLite.', re: 'СУБД' },
+  { k: 'реляционная модель', t: 'Relational model — данные в связанных таблицах', d: 'Данные разложены по таблицам, которые связаны ключами. Предложена Э. Коддом в 1970 году.', re: '[Рр]еляционн[а-яё]{2,3}(?: модел[а-яё]{1,2}| баз[а-яё]{0,2})?' },
+  { k: 'декларативный', t: 'Описываешь «что», а не «как»', d: 'В отличие от императивного кода с циклами, в SQL пишут желаемый результат, а план выполнения строит оптимизатор.', re: '[Дд]екларативн[а-яё]{2,3}' },
+  { k: 'диалект', t: 'Вариант SQL конкретной СУБД', d: 'Основа общая (стандарт ANSI/ISO), но функции, типы и детали отличаются: LIMIT vs TOP, || vs CONCAT, ILIKE и т. п.', re: '[Дд]иалект(?:а|ы|ов|ом|ами|ах|е)?(?![а-яё])' },
+  { k: 'PostgreSQL', t: 'Открытая объектно-реляционная СУБД', d: 'Строго следует стандарту, богатые типы (JSONB, массивы, UUID). Часто встречается в бэкендах.' },
+  { k: 'MySQL', t: 'Популярная открытая СУБД', d: 'Широко распространена в вебе. Некоторые вольности: нестрогий GROUP BY в старых режимах, нет FULL JOIN.' },
+  { k: 'SQLite', t: 'Встраиваемая СУБД в одном файле', d: 'Без сервера: вся база — один файл. Используется в мобильных приложениях, браузерах и для обучения.' },
+  { k: 'DQL', t: 'Data Query Language — язык запросов', d: 'Команда SELECT: чтение данных.' },
+  { k: 'DML', t: 'Data Manipulation Language — изменение данных', d: 'INSERT, UPDATE, DELETE — меняют строки, но не структуру.' },
+  { k: 'DDL', t: 'Data Definition Language — определение структуры', d: 'CREATE, ALTER, DROP, TRUNCATE — создают и меняют таблицы, индексы, схемы.' },
+  { k: 'DCL', t: 'Data Control Language — управление доступом', d: 'GRANT и REVOKE — выдать или отозвать права.', ex: 'GRANT SELECT ON orders TO qa_user;' },
+  { k: 'TCL', t: 'Transaction Control Language — управление транзакциями', d: 'BEGIN, COMMIT, ROLLBACK, SAVEPOINT.' },
+  { k: 'псевдоним', t: 'Alias — временное имя столбца или таблицы', d: 'Задаётся через AS. Действует только в этом запросе.', ex: 'SELECT u.name AS user_name FROM users u;', re: '[Пп]севдоним(?:а|ы|ов|ом|ами|ах|е|у)?(?![а-яё])|alias' },
+  { k: 'NULL', t: 'Отсутствие значения, «неизвестно»', d: 'Не 0 и не пустая строка. Любое сравнение с NULL даёт UNKNOWN, поэтому проверяют через IS NULL.', ex: 'WHERE age IS NULL' },
+  { k: 'UNKNOWN', t: 'Третье логическое значение', d: 'Результат сравнения с NULL. WHERE пропускает только TRUE, поэтому строки с UNKNOWN отбрасываются.' },
+  { k: 'трёхзначная логика', t: 'TRUE / FALSE / UNKNOWN', d: 'Логика SQL с учётом NULL: FALSE AND NULL = FALSE, TRUE OR NULL = TRUE, остальное с NULL — UNKNOWN.', re: '[Тт]р[её]хзначн[а-яё]{2,3} логик[а-яё]{1,2}' },
+
+  // ---- SELECT ----
+  { k: 'SELECT', t: 'Выбрать данные', d: 'Главная команда чтения. Логически выполняется после FROM, WHERE, GROUP BY и HAVING.' },
+  { k: 'DISTINCT', t: 'Убрать повторяющиеся строки', d: 'Применяется ко всей строке результата. С агрегатом: COUNT(DISTINCT col).' },
+  { k: 'ORDER BY', t: 'Сортировка результата', d: 'ASC — по возрастанию (по умолчанию), DESC — по убыванию. Без него порядок строк не гарантирован.' },
+  { k: 'LIMIT', t: 'Ограничить число строк', d: 'Вместе с OFFSET — для пагинации. В SQL Server — TOP, в стандарте — FETCH FIRST n ROWS ONLY.' },
+  { k: 'OFFSET', t: 'Пропустить первые N строк', d: 'Для страниц: страница k по n строк = LIMIT n OFFSET (k-1)*n. На больших смещениях медленно.' },
+  { k: 'пагинация', t: 'Pagination — постраничная выдача', d: 'Обычно через LIMIT/OFFSET. Нужен устойчивый ORDER BY с уникальным полем, иначе строки дублируются между страницами.', re: '[Пп]агинаци[а-яё]{1,2}' },
+  { k: 'full scan', t: 'Полный просмотр таблицы', d: 'Чтение всех строк подряд, когда нет подходящего индекса. В плане PostgreSQL — Seq Scan.' },
+
+  // ---- WHERE ----
+  { k: 'WHERE', t: 'Фильтр строк', d: 'Оставляет строки, для которых условие TRUE. Выполняется до группировки, агрегаты в нём нельзя.' },
+  { k: 'BETWEEN', t: 'Значение в диапазоне, границы включены', d: 'a BETWEEN 1 AND 5 ≡ a >= 1 AND a <= 5. Осторожно с датами со временем.' },
+  { k: 'IN', t: 'Значение из списка', d: 'Короткая запись нескольких OR. Список может быть подзапросом.', ex: "WHERE status IN ('new', 'paid')" },
+  { k: 'LIKE', t: 'Сравнение с шаблоном', d: '% — любое число символов, _ — ровно один символ. Регистрозависимость зависит от СУБД.', ex: "WHERE name LIKE 'А%'" },
+  { k: 'ILIKE', t: 'LIKE без учёта регистра (PostgreSQL)', d: "Только в PostgreSQL. Универсальная замена: LOWER(col) LIKE '...'" },
+  { k: 'COALESCE', t: 'Первое не-NULL значение', d: 'Подставляет значение по умолчанию вместо NULL. Аналоги: IFNULL, ISNULL, NVL.', ex: "COALESCE(city, 'не указан')" },
+  { k: 'NULLIF', t: 'NULL, если два значения равны', d: 'Часто — защита от деления на ноль: x / NULLIF(y, 0).' },
+
+  // ---- агрегаты ----
+  { k: 'агрегатная функция', t: 'Aggregate — сворачивает много строк в одно значение', d: 'COUNT, SUM, AVG, MIN, MAX. Все, кроме COUNT(*), пропускают NULL.', re: '[Аа]грегатн[а-яё]{2,3} функци[а-яё]{1,2}|[Аа]грегат(?:а|ы|ов|ом|ами|ах|е|у)?(?![а-яё])' },
+  { k: 'COUNT', t: 'Количество', d: 'COUNT(*) — строки; COUNT(col) — не-NULL значения; COUNT(DISTINCT col) — разные не-NULL значения.' },
+  { k: 'SUM', t: 'Сумма', d: 'Пропускает NULL. На пустом наборе возвращает NULL, а не 0.' },
+  { k: 'AVG', t: 'Среднее арифметическое', d: 'Пропускает NULL: делит на число непустых значений, а не на число строк.' },
+  { k: 'GROUP BY', t: 'Группировка строк', d: 'Делит строки на группы по значениям столбцов; агрегаты считаются для каждой группы. В SELECT — только столбцы группировки и агрегаты.' },
+  { k: 'HAVING', t: 'Фильтр групп', d: 'Как WHERE, но после GROUP BY и с агрегатами.', ex: 'HAVING COUNT(*) > 1' },
+  { k: 'CASE', t: 'Условное выражение в запросе', d: 'Аналог if/else: CASE WHEN условие THEN значение ... ELSE ... END. Удобен для условной агрегации.' },
+  { k: 'условная агрегация', t: 'Агрегат по части строк через CASE', d: 'Несколько счётчиков за один проход: SUM(CASE WHEN status = \'paid\' THEN 1 ELSE 0 END).', re: '[Уу]словн[а-яё]{2,3} агрегаци[а-яё]{1,2}' },
+
+  // ---- JOIN ----
+  { k: 'JOIN', t: 'Соединение таблиц', d: 'Склеивает строки двух таблиц по условию в ON. Без уточнения — это INNER JOIN.' },
+  { k: 'INNER JOIN', t: 'Внутреннее соединение', d: 'Только пары строк, для которых условие ON выполнено. Строки без пары пропадают.' },
+  { k: 'LEFT JOIN', t: 'Левое внешнее соединение', d: 'Все строки левой таблицы; если пары справа нет — столбцы правой равны NULL.' },
+  { k: 'RIGHT JOIN', t: 'Правое внешнее соединение', d: 'Зеркало LEFT JOIN. Обычно переписывают как LEFT, поменяв таблицы местами.' },
+  { k: 'FULL JOIN', t: 'Полное внешнее соединение', d: 'Все строки обеих таблиц; где пары нет — NULL. В MySQL нет, эмулируют через UNION двух LEFT JOIN.' },
+  { k: 'CROSS JOIN', t: 'Декартово произведение', d: 'Каждая строка с каждой: 5 × 6 = 30 строк. Случайно получается, если забыть условие соединения.' },
+  { k: 'self join', t: 'Соединение таблицы с самой собой', d: 'Через два псевдонима одной таблицы: сотрудник и руководитель, пары из одного города.', re: '[Ss]elf[ -]join' },
+  { k: 'анти-соединение', t: 'Anti-join — строки без пары', d: 'LEFT JOIN ... WHERE right.id IS NULL или NOT EXISTS: пользователи без заказов.', re: '[Аа]нти-соединени[а-яё]{1,2}|anti-join' },
+  { k: 'декартово произведение', t: 'Все комбинации строк двух таблиц', d: 'Результат CROSS JOIN: N × M строк.', re: '[Дд]екартов[а-яё]{0,2} произведени[а-яё]{1,2}' },
+  { k: 'UNION', t: 'Объединение результатов с удалением дублей', d: 'Складывает строки двух запросов «вниз». UNION ALL — без удаления дублей и быстрее.' },
+  { k: 'UNION ALL', t: 'Объединение без удаления дублей', d: 'Просто склеивает результаты. Быстрее UNION, потому что не сортирует и не сравнивает строки.' },
+  { k: 'EXCEPT', t: 'Разность множеств', d: 'Строки первого запроса, которых нет во втором. В Oracle — MINUS. Удобно для сверки данных.' },
+  { k: 'INTERSECT', t: 'Пересечение множеств', d: 'Строки, которые есть в результатах обоих запросов.' },
+
+  // ---- подзапросы ----
+  { k: 'подзапрос', t: 'Subquery — запрос внутри запроса', d: 'Пишется в скобках в WHERE, SELECT или FROM. Может вернуть значение, список или таблицу.', re: '[Пп]одзапрос(?:а|ы|ов|ом|ами|ах|е|у)?(?![а-яё])' },
+  { k: 'скалярный подзапрос', t: 'Подзапрос, возвращающий одно значение', d: 'Одна строка и один столбец. Несколько строк — ошибка, ноль — NULL.', re: '[Сс]калярн[а-яё]{2,3} подзапрос[а-яё]{0,3}' },
+  { k: 'коррелированный подзапрос', t: 'Подзапрос, зависящий от внешней строки', d: 'Ссылается на столбцы внешнего запроса и логически выполняется для каждой его строки.', re: '[Кк]оррелированн[а-яё]{2,3}(?: подзапрос[а-яё]{0,3})?' },
+  { k: 'EXISTS', t: 'Есть ли хотя бы одна строка', d: 'Возвращает TRUE, если подзапрос вернул строку. Останавливается на первой найденной. NOT EXISTS безопасен при NULL.' },
+  { k: 'NOT IN', t: 'Значение не из списка', d: 'Ловушка: если в списке есть NULL, условие никогда не TRUE и запрос возвращает 0 строк.' },
+  { k: 'производная таблица', t: 'Derived table — подзапрос в FROM', d: 'Подзапрос, который используется как таблица. Обычно требует псевдоним.', re: '[Пп]роизводн[а-яё]{2,3} таблиц[а-яё]{0,3}' },
+  { k: 'CTE', t: 'Common Table Expression — обобщённое табличное выражение', d: 'Именованный подзапрос в начале запроса через WITH. Делает сложные запросы читаемыми.', ex: 'WITH t AS (SELECT ...) SELECT * FROM t;' },
+  { k: 'WITH RECURSIVE', t: 'Рекурсивное CTE', d: 'Якорная часть + шаг через UNION ALL. Для деревьев и последовательностей. Нужно условие остановки.' },
+
+  // ---- окна ----
+  { k: 'оконная функция', t: 'Window function — вычисление по окну строк', d: 'Считает по группе строк, но не сворачивает их: каждая строка остаётся. Пишется с OVER(...).', re: '[Оо]конн[а-яё]{2,3} функци[а-яё]{1,3}' },
+  { k: 'OVER', t: 'Задаёт окно для оконной функции', d: 'OVER (PARTITION BY ... ORDER BY ...). Пустые скобки — вся выборка одно окно.' },
+  { k: 'PARTITION BY', t: 'Разбиение окна на группы', d: 'Как GROUP BY, но для окна: функция считается отдельно внутри каждой группы, строки не схлопываются.' },
+  { k: 'ROW_NUMBER', t: 'Порядковый номер строки в окне', d: '1, 2, 3… без повторов. Классика: «топ-1 в каждой группе» через WHERE rn = 1.' },
+  { k: 'RANK', t: 'Ранг с пропусками', d: 'Равным значениям — одинаковое место, следующие пропускаются: 1, 2, 2, 4.' },
+  { k: 'DENSE_RANK', t: 'Ранг без пропусков', d: '1, 2, 2, 3. Подходит для задачи «N-я по величине зарплата».' },
+  { k: 'LAG', t: 'Значение из предыдущей строки окна', d: 'LAG(col, n, default). Для сравнения с прошлым периодом. LEAD — из следующей строки.' },
+  { k: 'накопительный итог', t: 'Running total — сумма с начала до текущей строки', d: 'SUM(amount) OVER (ORDER BY date).', re: '[Нн]акопительн[а-яё]{2,3} итог[а-яё]{0,2}' },
+
+  // ---- DML ----
+  { k: 'INSERT', t: 'Вставить строки', d: 'INSERT INTO t (cols) VALUES (...). Можно вставить результат SELECT.' },
+  { k: 'UPDATE', t: 'Изменить строки', d: 'Без WHERE меняет всю таблицу. Перед запуском проверьте условие через SELECT.' },
+  { k: 'DELETE', t: 'Удалить строки', d: 'Построчно, по условию, срабатывают триггеры, можно откатить в транзакции.' },
+  { k: 'TRUNCATE', t: 'Быстро очистить таблицу', d: 'Удаляет все строки сразу, без WHERE и триггеров; обычно сбрасывает автоинкремент. Относится к DDL.' },
+  { k: 'DROP', t: 'Удалить объект базы', d: 'DROP TABLE удаляет таблицу целиком вместе со структурой и данными.' },
+  { k: 'RETURNING', t: 'Вернуть значения изменённых строк', d: 'PostgreSQL/SQLite: INSERT ... RETURNING id — сразу получить сгенерированный id.' },
+  { k: 'UPSERT', t: 'Вставить или обновить', d: 'Если строка с таким ключом есть — обновить, иначе вставить. ON CONFLICT (PostgreSQL), ON DUPLICATE KEY (MySQL), MERGE.' },
+  { k: 'мягкое удаление', t: 'Soft delete — пометка вместо удаления', d: 'Ставят deleted_at или is_deleted, запросы фильтруют такие строки. Данные можно восстановить.', re: '[Мм]ягк[а-яё]{2,3} удалени[а-яё]{1,2}|soft delete' },
+  { k: 'триггер', t: 'Trigger — код, который база выполняет на событие', d: 'Например, при DELETE записать строку в журнал. TRUNCATE триггеры удаления не вызывает.', re: '[Тт]риггер(?:а|ы|ов|ом|ами|ах|е|у)?(?![а-яё])' },
+  { k: 'идемпотентность', t: 'Повтор операции не меняет результат', d: 'Повторная отправка того же запроса не должна создать дубль. Помогают UNIQUE и UPSERT.', re: '[Ии]демпотентност[а-яё]{1,2}' },
+
+  // ---- DDL ----
+  { k: 'ограничение', t: 'Constraint — правило для данных', d: 'PRIMARY KEY, FOREIGN KEY, UNIQUE, NOT NULL, CHECK. База отклоняет данные, нарушающие правило.', re: '[Оо]граничени(?:е|я|й|ю|ем|ями|ях)(?![а-яё])|constraints?' },
+  { k: 'первичный ключ', t: 'Primary key, PK — идентификатор строки', d: 'Уникален и не NULL. Один на таблицу (может быть составным). Автоматически создаёт индекс.', re: '[Пп]ервичн[а-яё]{2,3} ключ[а-яё]{0,3}|PRIMARY KEY' },
+  { k: 'внешний ключ', t: 'Foreign key, FK — ссылка на строку другой таблицы', d: 'Значение должно существовать в PK другой таблицы. Обеспечивает ссылочную целостность.', re: '[Вв]нешн[а-яё]{2,3} ключ[а-яё]{0,3}|FOREIGN KEY' },
+  { k: 'UNIQUE', t: 'Ограничение уникальности', d: 'Запрещает повторы значений. В большинстве СУБД допускает несколько NULL.' },
+  { k: 'NOT NULL', t: 'Значение обязательно', d: 'Запрещает NULL в столбце.' },
+  { k: 'CHECK', t: 'Проверка условия для значения', d: 'Например, CHECK (amount > 0). Строка, нарушающая условие, не запишется.' },
+  { k: 'DEFAULT', t: 'Значение по умолчанию', d: 'Подставляется, если столбец не указан в INSERT.' },
+  { k: 'ON DELETE CASCADE', t: 'Каскадное удаление', d: 'При удалении родительской строки удаляются и дочерние (заказы вместе с пользователем).' },
+  { k: 'автоинкремент', t: 'Автоматически растущий id', d: 'SERIAL/IDENTITY в PostgreSQL, AUTO_INCREMENT в MySQL. Номера могут идти с пропусками после откатов и удалений.', re: '[Аа]втоинкремент[а-яё]{0,3}' },
+  { k: 'суррогатный ключ', t: 'Искусственный id без бизнес-смысла', d: 'Число или UUID. Не меняется, в отличие от естественных ключей вроде email или телефона.', re: '[Сс]уррогатн[а-яё]{2,3}(?: ключ[а-яё]{0,3})?' },
+  { k: 'ссылочная целостность', t: 'Referential integrity', d: 'Все ссылки FK указывают на существующие строки — нет «сирот».', re: '[Сс]сылочн[а-яё]{2,3} целостност[а-яё]{1,2}' },
+  { k: 'сирота', t: 'Orphan — запись без родителя', d: 'Например, заказ с user_id, которого нет в users. Появляется, когда нет FK или его обошли.', re: '[Сс]ирот(?:а|ы|у|ой|ам|ами|ах)?(?![а-яё])' },
+  { k: 'NUMERIC', t: 'Точное десятичное число', d: 'NUMERIC(p, s) / DECIMAL: p цифр всего, s после запятой. Для денег — только он, не FLOAT.' },
+  { k: 'VARCHAR', t: 'Строка переменной длины', d: 'VARCHAR(n) — до n символов. Граница n и n+1 — хороший тест.' },
+  { k: 'TIMESTAMP', t: 'Дата и время', d: 'TIMESTAMP — без часового пояса, TIMESTAMPTZ (PostgreSQL) — с ним. Источник багов «сдвиг на 3 часа».' },
+  { k: 'ALTER TABLE', t: 'Изменение структуры таблицы', d: 'Добавить, удалить, переименовать столбец, добавить ограничение.' },
+  { k: 'миграция', t: 'Migration — версионированное изменение схемы', d: 'Скрипт ALTER/CREATE, который выкатывается вместе с релизом. Проверяют на копии реальных данных.', re: '[Мм]играци(?:я|и|ю|ей|ям|ями|ях)(?![а-яё])' },
+  { k: 'нормализация', t: 'Раскладка данных без дублирования фактов', d: 'Каждый факт хранится в одном месте. Нормальные формы 1НФ, 2НФ, 3НФ.', re: '[Нн]ормализаци[а-яё]{1,2}' },
+  { k: 'денормализация', t: 'Сознательное дублирование данных', d: 'Ради скорости чтения: например, счётчик заказов у пользователя. Риск рассинхрона.', re: '[Дд]енормализаци[а-яё]{1,2}' },
+  { k: 'многие ко многим', t: 'Связь M:N', d: 'Реализуется связующей таблицей с двумя внешними ключами, например order_items(order_id, product_id).', re: '[Мм]ногие ко многим' },
+  { k: 'связующая таблица', t: 'Junction table для связи многие ко многим', d: 'Содержит пары внешних ключей двух таблиц.', re: '[Сс]вязующ[а-яё]{2,3} таблиц[а-яё]{0,3}' },
+
+  // ---- индексы, транзакции ----
+  { k: 'индекс', t: 'Index — структура для быстрого поиска', d: 'Обычно B-дерево. Ускоряет WHERE/JOIN/ORDER BY, но замедляет запись и занимает место.', ex: 'CREATE INDEX idx_orders_user ON orders(user_id);', re: '[Ии]ндекс(?:а|ы|ов|ом|ами|ах|е|у)?(?![а-яё])' },
+  { k: 'B-дерево', t: 'B-tree — сбалансированное дерево поиска', d: 'Основная структура индексов: поиск, диапазоны и сортировка за логарифмическое число шагов.', re: 'B-дерев[а-яё]{1,2}|B-tree' },
+  { k: 'составной индекс', t: 'Индекс по нескольким столбцам', d: 'Работает по правилу левого префикса: индекс (a, b) помогает фильтру по a или по a и b, но не по одному b.', re: '[Сс]оставн[а-яё]{2,3} индекс[а-яё]{0,3}' },
+  { k: 'EXPLAIN', t: 'Показать план выполнения запроса', d: 'Видно, используется ли индекс (Index Scan) или полный просмотр (Seq Scan). EXPLAIN ANALYZE — с реальным временем.' },
+  { k: 'транзакция', t: 'Transaction — группа операций «всё или ничего»', d: 'BEGIN … COMMIT фиксирует, ROLLBACK отменяет. Свойства описывает ACID.', re: '[Тт]ранзакци(?:я|и|ю|ей|ям|ями|ях)(?![а-яё])' },
+  { k: 'COMMIT', t: 'Зафиксировать транзакцию', d: 'После COMMIT изменения видны другим и сохраняются надёжно.' },
+  { k: 'ROLLBACK', t: 'Отменить транзакцию', d: 'Возвращает данные к состоянию на момент BEGIN (или SAVEPOINT).' },
+  { k: 'SAVEPOINT', t: 'Точка сохранения внутри транзакции', d: 'ROLLBACK TO sp откатывает только изменения после неё.' },
+  { k: 'autocommit', t: 'Режим автофиксации', d: 'Каждая команда без явного BEGIN сразу фиксируется — откатить её уже нельзя.', re: 'autocommit|[Аа]втофиксаци[а-яё]{1,2}' },
+  { k: 'ACID', t: 'Atomicity, Consistency, Isolation, Durability', d: 'Атомарность, согласованность, изолированность, долговечность — гарантии транзакций.' },
+  { k: 'уровень изоляции', t: 'Isolation level', d: 'Насколько транзакции видят изменения друг друга: READ UNCOMMITTED, READ COMMITTED, REPEATABLE READ, SERIALIZABLE.', re: '[Уу]ров(?:ень|ня|ни|ней) изоляции' },
+  { k: 'грязное чтение', t: 'Dirty read', d: 'Чтение чужих незафиксированных изменений, которые потом могут откатить.', re: '[Гг]рязн[а-яё]{2,3} чтени[а-яё]{1,2}' },
+  { k: 'фантом', t: 'Phantom read', d: 'Повторный запрос с тем же WHERE вернул новые строки, вставленные другой транзакцией.', re: '[Фф]антом(?:ы|ов|ами)?(?![а-яё])' },
+  { k: 'взаимоблокировка', t: 'Deadlock', d: 'Две транзакции ждут блокировки друг друга. СУБД откатывает одну из них.', re: '[Вв]заимоблокировк[а-яё]{1,2}|[Dd]eadlock' },
+  { k: 'SELECT FOR UPDATE', t: 'Чтение с блокировкой строк', d: 'Блокирует выбранные строки до конца транзакции, чтобы никто не изменил их параллельно.', re: 'SELECT \\.\\.\\. FOR UPDATE|SELECT FOR UPDATE' },
+
+  // ---- функции ----
+  { k: 'CAST', t: 'Приведение типа', d: 'CAST(x AS тип). В PostgreSQL короче: x::тип.', ex: "CAST('42' AS INTEGER)" },
+  { k: 'целочисленное деление', t: 'Деление целых с отбрасыванием дробной части', d: 'В PostgreSQL, SQLite, SQL Server 7 / 2 = 3. Нужен 7 / 2.0 или CAST.', re: '[Цц]елочисленн[а-яё]{2,3} делени[а-яё]{1,2}' },
+  { k: 'UTC', t: 'Coordinated Universal Time — всемирное время', d: 'В базах время обычно хранят в UTC и переводят в местное при показе.' },
+
+  // ---- QA ----
+  { k: 'SQL-инъекция', t: 'SQL injection — внедрение кода через ввод', d: 'Приложение склеивает запрос из пользовательского ввода, и ввод меняет смысл запроса. Защита — параметризованные запросы.', re: 'SQL-инъекци[а-яё]{1,2}|[Ии]нъекци(?:я|и|ю|ей|ям|ями|ях)(?![а-яё])' },
+  { k: 'параметризованный запрос', t: 'Prepared statement — запрос с плейсхолдерами', d: 'WHERE login = ? — значение передаётся отдельно и не становится частью кода SQL.', re: '[Пп]араметризованн[а-яё]{2,3} запрос[а-яё]{0,3}|prepared statements?' },
+  { k: 'ORM', t: 'Object-Relational Mapping', d: 'Библиотека, которая строит SQL из объектов кода (SQLAlchemy, Hibernate, Django ORM).' },
+];
+
+/* Флипкарты справочника «SQL: основы» */
+const CARDS = [
+  // ---- Основы и SELECT ----
+  { c: 'SELECT', f: 'Что значит «SQL декларативный»?', b: 'Описываешь, ЧТО получить, а не КАК искать. План выполнения строит СУБД.' },
+  { c: 'SELECT', f: 'DDL, DML, DQL, DCL, TCL — что куда?', b: 'DDL: CREATE/ALTER/DROP/TRUNCATE\nDML: INSERT/UPDATE/DELETE\nDQL: SELECT\nDCL: GRANT/REVOKE\nTCL: BEGIN/COMMIT/ROLLBACK' },
+  { c: 'SELECT', f: 'Какие кавычки для строк, а какие для имён?', b: "Строки — одинарные: `'Москва'`.\nИмена — двойные `\"order\"` (MySQL — обратные `` `order` ``)." },
+  { c: 'SELECT', f: 'Гарантирован ли порядок строк без ORDER BY?', b: 'Нет. Таблица — множество, порядок может меняться между запусками.' },
+  { c: 'SELECT', f: 'Порядок выполнения частей SELECT?', b: 'FROM/JOIN → WHERE → GROUP BY → HAVING → SELECT → DISTINCT → ORDER BY → LIMIT' },
+  { c: 'SELECT', f: 'Почему псевдоним из SELECT нельзя использовать в WHERE?', b: 'WHERE выполняется раньше SELECT — псевдонима ещё нет. В ORDER BY можно.' },
+  { c: 'SELECT', f: 'К чему применяется DISTINCT?', b: 'Ко всей строке результата: `SELECT DISTINCT a, b` — уникальные пары.' },
+  { c: 'SELECT', f: 'Сортировка по убыванию?', b: '`ORDER BY col DESC`. По умолчанию — ASC.' },
+  { c: 'SELECT', f: 'Как взять 3-ю страницу по 10 строк?', b: '`ORDER BY id LIMIT 10 OFFSET 20`' },
+  { c: 'SELECT', f: 'Аналоги LIMIT в других СУБД?', b: 'SQL Server: `TOP n`. Стандарт/Oracle: `FETCH FIRST n ROWS ONLY`.' },
+  { c: 'SELECT', f: 'Чем плох SELECT * в автотестах?', b: 'Добавят столбец — сломается порядок и маппинг. Перечисляйте столбцы явно.' },
+
+  // ---- WHERE и NULL ----
+  { c: 'WHERE и NULL', f: 'Приоритет AND и OR?', b: 'AND выше. `a OR b AND c` = `a OR (b AND c)`. Смешиваете — ставьте скобки.' },
+  { c: 'WHERE и NULL', f: 'Включены ли границы в BETWEEN?', b: 'Да: `BETWEEN 1 AND 5` ≡ `>= 1 AND <= 5`.' },
+  { c: 'WHERE и NULL', f: 'Что значат % и _ в LIKE?', b: '`%` — любое число символов (и ноль), `_` — ровно один символ.' },
+  { c: 'WHERE и NULL', f: 'Поиск без учёта регистра?', b: "PostgreSQL: `ILIKE`. Везде: `LOWER(name) LIKE 'анна%'`." },
+  { c: 'WHERE и NULL', f: 'Что такое NULL?', b: 'Отсутствие значения, «неизвестно». Не 0 и не пустая строка.' },
+  { c: 'WHERE и NULL', f: 'Почему `WHERE age = NULL` ничего не находит?', b: 'Сравнение с NULL даёт UNKNOWN, а WHERE пропускает только TRUE. Нужно `IS NULL`.' },
+  { c: 'WHERE и NULL', f: '`NULL = NULL` — это?', b: 'NULL (UNKNOWN), не TRUE.' },
+  { c: 'WHERE и NULL', f: 'TRUE OR NULL? FALSE AND NULL?', b: 'TRUE OR NULL = TRUE\nFALSE AND NULL = FALSE\nОстальные с NULL — NULL.' },
+  { c: 'WHERE и NULL', f: 'Попадут ли строки с city = NULL в `WHERE city <> \'Москва\'`?', b: 'Нет. Нужно добавить `OR city IS NULL`.' },
+  { c: 'WHERE и NULL', f: 'Что делает COALESCE?', b: "Возвращает первый не-NULL аргумент.\n`COALESCE(city, 'не указан')`" },
+  { c: 'WHERE и NULL', f: 'Как избежать деления на ноль?', b: '`x / NULLIF(y, 0)` — вернёт NULL вместо ошибки.' },
+  { c: 'WHERE и NULL', f: "`'abc' || NULL` = ?", b: 'NULL. Почти любая операция с NULL даёт NULL.' },
+  { c: 'WHERE и NULL', f: 'Как безопасно фильтровать timestamp за февраль?', b: "`created_at >= '2026-02-01' AND created_at < '2026-03-01'`\nBETWEEN потеряет 28-е после полуночи." },
+
+  // ---- Агрегаты ----
+  { c: 'Агрегаты', f: 'COUNT(*) vs COUNT(col)?', b: 'COUNT(*) — все строки.\nCOUNT(col) — только не-NULL значения.' },
+  { c: 'Агрегаты', f: 'Что вернёт SUM по пустому набору?', b: 'NULL, а не 0. Лечится `COALESCE(SUM(x), 0)`.' },
+  { c: 'Агрегаты', f: 'AVG учитывает NULL?', b: 'Нет: делит сумму на число непустых значений, а не на число строк.' },
+  { c: 'Агрегаты', f: 'Какие столбцы можно писать в SELECT при GROUP BY?', b: 'Только столбцы из GROUP BY и агрегатные функции.' },
+  { c: 'Агрегаты', f: 'WHERE vs HAVING?', b: 'WHERE — строки до группировки, без агрегатов.\nHAVING — группы после GROUP BY, с агрегатами.' },
+  { c: 'Агрегаты', f: 'Как найти дубли email?', b: '```\nSELECT email, COUNT(*) FROM users\nGROUP BY email HAVING COUNT(*) > 1;\n```' },
+  { c: 'Агрегаты', f: 'Как посчитать число разных городов?', b: '`COUNT(DISTINCT city)` — NULL не считается.' },
+  { c: 'Агрегаты', f: 'Как посчитать несколько статусов одним запросом?', b: "Условная агрегация:\n`SUM(CASE WHEN status = 'paid' THEN 1 ELSE 0 END)`" },
+  { c: 'Агрегаты', f: 'Куда попадают NULL при GROUP BY?', b: 'В одну общую группу.' },
+
+  // ---- JOIN ----
+  { c: 'JOIN', f: 'INNER JOIN — что вернёт?', b: 'Только пары строк, где условие ON выполнено. Строки без пары пропадают.' },
+  { c: 'JOIN', f: 'LEFT JOIN — что вернёт?', b: 'Все строки левой таблицы. Нет пары справа — столбцы правой = NULL.' },
+  { c: 'JOIN', f: 'Чем отличается FULL JOIN?', b: 'Все строки обеих таблиц, где нет пары — NULL. В MySQL нет.' },
+  { c: 'JOIN', f: 'CROSS JOIN 5 и 6 строк — сколько строк?', b: '30 — каждая с каждой (декартово произведение).' },
+  { c: 'JOIN', f: 'Как найти пользователей без заказов через JOIN?', b: '```\nSELECT u.* FROM users u\nLEFT JOIN orders o ON o.user_id = u.id\nWHERE o.id IS NULL;\n```' },
+  { c: 'JOIN', f: 'Почему `LEFT JOIN ... WHERE o.status = \'paid\'` работает как INNER?', b: 'У строк без пары o.status = NULL — WHERE их отбрасывает. Условие правой таблицы переносят в ON.' },
+  { c: 'JOIN', f: 'LEFT JOIN + COUNT(*) у пользователя без заказов = ?', b: '1, а не 0: строка с NULL тоже строка. Считайте `COUNT(o.id)`.' },
+  { c: 'JOIN', f: 'Почему после двух JOIN сумма завысилась?', b: 'Две связи «один ко многим» перемножили строки. Агрегируйте в подзапросе до соединения.' },
+  { c: 'JOIN', f: 'Что такое self join?', b: 'Соединение таблицы с собой через два псевдонима: сотрудник ↔ руководитель.' },
+  { c: 'JOIN', f: 'UNION vs UNION ALL?', b: 'UNION убирает дубли (дороже). UNION ALL — просто склеивает.' },
+  { c: 'JOIN', f: 'Что делает EXCEPT?', b: 'Строки первого запроса, которых нет во втором. В Oracle — MINUS.' },
+  { c: 'JOIN', f: 'JOIN vs UNION — в чём разница?', b: 'JOIN добавляет столбцы (вбок), UNION — строки (вниз).' },
+
+  // ---- Подзапросы и окна ----
+  { c: 'Подзапросы и окна', f: 'Что такое скалярный подзапрос?', b: 'Подзапрос, возвращающий одно значение. Несколько строк — ошибка, ноль — NULL.' },
+  { c: 'Подзапросы и окна', f: 'Чем опасен NOT IN с подзапросом?', b: 'Если в подзапросе есть NULL — результат пустой. Используйте NOT EXISTS.' },
+  { c: 'Подзапросы и окна', f: 'Зачем `SELECT 1` внутри EXISTS?', b: 'EXISTS проверяет только наличие строки, столбцы не важны.' },
+  { c: 'Подзапросы и окна', f: 'Что такое коррелированный подзапрос?', b: 'Подзапрос ссылается на столбец внешнего и выполняется для каждой его строки.' },
+  { c: 'Подзапросы и окна', f: 'Что такое CTE?', b: 'Именованный подзапрос через `WITH name AS (...)`. Делает запрос читаемым.' },
+  { c: 'Подзапросы и окна', f: 'Из чего состоит рекурсивная CTE?', b: 'Якорь + UNION ALL + рекурсивный шаг с условием остановки.' },
+  { c: 'Подзапросы и окна', f: 'Оконная функция vs GROUP BY?', b: 'Окно не схлопывает строки: каждая остаётся и получает вычисленное значение.' },
+  { c: 'Подзапросы и окна', f: 'ROW_NUMBER / RANK / DENSE_RANK для 100, 90, 90, 80?', b: 'ROW_NUMBER: 1 2 3 4\nRANK: 1 2 2 4\nDENSE_RANK: 1 2 2 3' },
+  { c: 'Подзапросы и окна', f: 'Как взять топ-1 заказ каждого пользователя?', b: '```\nSELECT * FROM (\n  SELECT o.*, ROW_NUMBER() OVER (\n    PARTITION BY user_id ORDER BY amount DESC) rn\n  FROM orders o) t\nWHERE rn = 1;\n```' },
+  { c: 'Подзапросы и окна', f: 'Можно ли оконную функцию в WHERE?', b: 'Нет — она считается на шаге SELECT. Фильтр — во внешнем запросе/CTE.' },
+  { c: 'Подзапросы и окна', f: 'Накопительный итог?', b: '`SUM(amount) OVER (ORDER BY created_at)`' },
+  { c: 'Подзапросы и окна', f: 'LAG vs LEAD?', b: 'LAG — значение из предыдущей строки окна, LEAD — из следующей.' },
+  { c: 'Подзапросы и окна', f: 'Вторая по величине зарплата?', b: '`SELECT MAX(salary) FROM emp WHERE salary < (SELECT MAX(salary) FROM emp)`\nили DENSE_RANK() = 2.' },
+
+  // ---- Изменение и структура ----
+  { c: 'Изменение и структура', f: 'Чем опасен UPDATE без WHERE?', b: 'Изменит ВСЕ строки таблицы. Сначала проверьте условие через SELECT.' },
+  { c: 'Изменение и структура', f: 'DELETE vs TRUNCATE vs DROP?', b: 'DELETE — строки по условию, построчно, триггеры.\nTRUNCATE — быстро все строки.\nDROP — таблицу целиком.' },
+  { c: 'Изменение и структура', f: 'Как получить id только что вставленной строки?', b: 'PostgreSQL/SQLite: `INSERT ... RETURNING id`. MySQL: `LAST_INSERT_ID()`.' },
+  { c: 'Изменение и структура', f: 'Что такое UPSERT?', b: 'Вставить или обновить при конфликте ключа.\n`ON CONFLICT (email) DO UPDATE ...` / `ON DUPLICATE KEY UPDATE`.' },
+  { c: 'Изменение и структура', f: 'Что такое мягкое удаление?', b: 'Вместо DELETE ставят `deleted_at`, запросы фильтруют `deleted_at IS NULL`.' },
+  { c: 'Изменение и структура', f: 'PRIMARY KEY vs UNIQUE?', b: 'PK — один на таблицу, не NULL. UNIQUE — сколько угодно, обычно допускает NULL.' },
+  { c: 'Изменение и структура', f: 'Что такое внешний ключ?', b: 'Столбец, значение которого обязано существовать в PK другой таблицы.' },
+  { c: 'Изменение и структура', f: 'ON DELETE CASCADE / SET NULL / RESTRICT?', b: 'CASCADE — удалить дочерние.\nSET NULL — обнулить ссылку.\nRESTRICT — запретить удаление родителя.' },
+  { c: 'Изменение и структура', f: 'Какой тип для денег?', b: '`NUMERIC(p, s)` / DECIMAL. Не FLOAT: 0.1 + 0.2 ≠ 0.3.' },
+  { c: 'Изменение и структура', f: 'Как реализовать связь многие ко многим?', b: 'Связующей таблицей с двумя FK: `order_items(order_id, product_id)`.' },
+  { c: 'Изменение и структура', f: 'Что такое 3НФ в двух словах?', b: 'Неключевые столбцы зависят только от ключа, а не друг от друга.' },
+  { c: 'Изменение и структура', f: 'Что проверить для VARCHAR(50)?', b: 'Пустую строку, NULL, 50 и 51 символ, юникод/эмодзи, апостроф.' },
+
+  // ---- Индексы и транзакции ----
+  { c: 'Индексы и транзакции', f: 'Плюсы и минусы индекса?', b: 'Ускоряет поиск, JOIN, сортировку.\nЗамедляет INSERT/UPDATE/DELETE, занимает место.' },
+  { c: 'Индексы и транзакции', f: 'Когда индекс по created_at не сработает?', b: 'Функция над столбцом: `WHERE YEAR(created_at) = 2026`. Используйте диапазон.' },
+  { c: 'Индексы и транзакции', f: 'Правило левого префикса?', b: 'Индекс (a, b) помогает фильтру по a или по a+b, но не по одному b.' },
+  { c: 'Индексы и транзакции', f: 'Как узнать, использует ли запрос индекс?', b: '`EXPLAIN` (PostgreSQL: `EXPLAIN ANALYZE`). Index Scan vs Seq Scan.' },
+  { c: 'Индексы и транзакции', f: 'Расшифруйте ACID.', b: 'Atomicity — всё или ничего\nConsistency — ограничения соблюдены\nIsolation — транзакции не мешают\nDurability — после COMMIT не пропадёт' },
+  { c: 'Индексы и транзакции', f: 'COMMIT vs ROLLBACK?', b: 'COMMIT фиксирует изменения транзакции, ROLLBACK отменяет их.' },
+  { c: 'Индексы и транзакции', f: 'Четыре уровня изоляции?', b: 'READ UNCOMMITTED → READ COMMITTED → REPEATABLE READ → SERIALIZABLE' },
+  { c: 'Индексы и транзакции', f: 'Что такое грязное чтение?', b: 'Чтение чужих незафиксированных изменений, которые могут откатить.' },
+  { c: 'Индексы и транзакции', f: 'Что такое фантомное чтение?', b: 'Повторный запрос с тем же WHERE вернул новые строки, вставленные другой транзакцией.' },
+  { c: 'Индексы и транзакции', f: 'Что такое deadlock?', b: 'Две транзакции ждут блокировки друг друга. СУБД откатывает одну.' },
+  { c: 'Индексы и транзакции', f: 'Как защититься от SQL-инъекций?', b: 'Параметризованные запросы: `WHERE login = ?`. Не склеивать SQL из ввода.' },
+  { c: 'Индексы и транзакции', f: 'Почему `7 / 2` = 3?', b: 'Целочисленное деление (PostgreSQL, SQLite, SQL Server). Пишите `7 / 2.0`.' },
+];
+
+/* Тест справочника «SQL: основы».
+   Код-вопросы выполняются на учебной базе (users, orders) из раздела «Что такое SQL». */
+const QUIZ = [
+  // ---- SELECT ----
+  { t: 'SELECT', q: 'Сколько строк вернёт запрос на учебной базе?', code: 'SELECT DISTINCT city FROM users;',
+    o: ['4', '3', '5', '2'], a: 0, e: 'Москва, СПб, Казань и NULL. DISTINCT оставляет NULL одной строкой.' },
+  { t: 'SELECT', q: 'Что вернёт запрос?', code: 'SELECT name FROM users ORDER BY age DESC LIMIT 1;',
+    o: ['Глеб', 'Борис', 'Вера', 'Анна'], a: 0, e: 'Самый старший — Глеб, 42. В SQLite/MySQL NULL при DESC идёт в конце. (В PostgreSQL NULL при DESC был бы первым — вернулась бы Вера.)' },
+  { t: 'SELECT', q: 'Какие id заказов вернёт запрос?', code: 'SELECT id FROM orders ORDER BY id LIMIT 2 OFFSET 3;',
+    o: ['4, 5', '3, 4', '2, 3', '5, 6'], a: 0, e: 'OFFSET 3 пропускает id 1, 2, 3, LIMIT 2 берёт следующие два.' },
+  { t: 'SELECT', q: 'В каком порядке СУБД логически выполняет части запроса?',
+    o: ['FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY', 'SELECT → FROM → WHERE → GROUP BY → ORDER BY', 'FROM → SELECT → WHERE → ORDER BY → GROUP BY', 'WHERE → FROM → SELECT → HAVING → ORDER BY'], a: 0, e: 'Сначала источник и фильтр строк, потом группы, затем вычисление столбцов и сортировка.' },
+  { t: 'SELECT', q: 'Что вернёт запрос для Веры (age = NULL)?', code: 'SELECT age + 1 FROM users WHERE name = \'Вера\';',
+    o: ['NULL', '1', '0', 'Ошибку'], a: 0, e: 'Арифметика с NULL даёт NULL: неизвестно + 1 = неизвестно.' },
+  { t: 'SELECT', q: 'Почему запрос упадёт в PostgreSQL?', code: 'SELECT age * 12 AS months FROM users WHERE months > 400;',
+    o: ['WHERE выполняется до SELECT — псевдонима months ещё нет', 'Нельзя умножать в SELECT', 'AS нельзя использовать со столбцами', 'Нужны кавычки вокруг months'], a: 0, e: 'Псевдонимы появляются на шаге SELECT. В ORDER BY их использовать можно, в WHERE — нет (SQLite и MySQL это прощают).' },
+  { t: 'SELECT', q: 'Что гарантирует запрос `SELECT * FROM orders LIMIT 5` без ORDER BY?',
+    o: ['Вернутся какие-то 5 строк, порядок не определён', 'Вернутся 5 первых добавленных строк', 'Вернутся 5 строк с наименьшим id', 'Запрос выдаст ошибку без ORDER BY'], a: 0, e: 'Без ORDER BY порядок строк не гарантирован — тест, опирающийся на него, будет нестабилен.' },
+  { t: 'SELECT', q: 'Какие кавычки используются для строковых значений в стандартном SQL?',
+    o: ["Одинарные: 'Москва'", 'Двойные: "Москва"', 'Обратные: `Москва`', 'Любые — без разницы'], a: 0, e: 'Двойные кавычки по стандарту — для имён (идентификаторов), например "order". В MySQL двойные иногда работают для строк, но это не переносимо.' },
+
+  // ---- WHERE и NULL ----
+  { t: 'WHERE и NULL', q: 'Сколько строк вернёт запрос?', code: 'SELECT name FROM users WHERE age = NULL;',
+    o: ['0', '1', '5', 'Ошибку синтаксиса'], a: 0, e: 'Сравнение с NULL даёт UNKNOWN, WHERE его отбрасывает. Нужно IS NULL.' },
+  { t: 'WHERE и NULL', q: 'Кого вернёт запрос?', code: "SELECT name FROM users WHERE city <> 'Москва';",
+    o: ['Борис, Глеб', 'Борис, Глеб, Дина', 'Анна, Вера', 'Всех, кроме Анны'], a: 0, e: 'У Дины city IS NULL: NULL <> \'Москва\' — UNKNOWN, строка отброшена.' },
+  { t: 'WHERE и NULL', q: 'Кого вернёт запрос?', code: "SELECT name FROM users\nWHERE age > 30 OR city = 'Москва' AND age < 30;",
+    o: ['Анна, Борис, Глеб', 'Анна', 'Борис, Глеб', 'Анна, Вера, Борис, Глеб'], a: 0, e: 'AND приоритетнее: age > 30 OR (Москва AND age < 30). Вера не попала: age NULL.' },
+  { t: 'WHERE и NULL', q: 'Кого вернёт запрос?', code: 'SELECT name FROM users WHERE age BETWEEN 19 AND 35;',
+    o: ['Анна, Борис, Дина', 'Анна', 'Анна, Борис', 'Анна, Дина'], a: 0, e: 'Границы BETWEEN включены: 19 (Дина) и 35 (Борис) попадают.' },
+  { t: 'WHERE и NULL', q: 'Кого вернёт запрос?', code: "SELECT name FROM users WHERE name LIKE '_ера';",
+    o: ['Вера', 'Никого', 'Вера, Анна', 'Ошибку'], a: 0, e: '_ — ровно один любой символ, дальше «ера».' },
+  { t: 'WHERE и NULL', q: 'Сколько строк вернёт запрос?', code: "SELECT name FROM users WHERE name LIKE '%а';",
+    o: ['3', '1', '4', '5'], a: 0, e: 'Анна, Вера, Дина. % — любое число символов, включая ноль.' },
+  { t: 'WHERE и NULL', q: 'Сколько строк вернёт запрос?', code: 'SELECT name FROM users WHERE id NOT IN (1, 2, NULL);',
+    o: ['0', '3', '5', '2'], a: 0, e: 'id NOT IN (1, 2, NULL) ≡ id<>1 AND id<>2 AND id<>NULL. Последнее — UNKNOWN, поэтому условие никогда не TRUE.' },
+  { t: 'WHERE и NULL', q: 'Что вернёт выражение?', code: "SELECT COALESCE(NULL, NULL, 'x', 'y');",
+    o: ['x', 'NULL', 'y', 'xy'], a: 0, e: 'COALESCE возвращает первый не-NULL аргумент.' },
+  { t: 'WHERE и NULL', q: 'Чему равно `TRUE OR NULL`?',
+    o: ['TRUE', 'NULL', 'FALSE', 'Ошибка'], a: 0, e: 'Если один операнд OR истинен, результат точно TRUE, каким бы ни было неизвестное.' },
+  { t: 'WHERE и NULL', q: 'Чему равно `FALSE AND NULL`?',
+    o: ['FALSE', 'NULL', 'TRUE', 'Ошибка'], a: 0, e: 'Если один операнд AND ложен, результат точно FALSE.' },
+  { t: 'WHERE и NULL', q: 'Что вернёт выражение?', code: 'SELECT NULLIF(5, 5);',
+    o: ['NULL', '5', '0', 'TRUE'], a: 0, e: 'NULLIF возвращает NULL, если аргументы равны, иначе первый аргумент.' },
+  { t: 'WHERE и NULL', q: 'Столбец created_at — TIMESTAMP. Какое условие надёжно выберет все записи за февраль 2026?',
+    o: ["created_at >= '2026-02-01' AND created_at < '2026-03-01'", "created_at BETWEEN '2026-02-01' AND '2026-02-28'", "created_at LIKE '2026-02'", "created_at = '2026-02'"], a: 0, e: 'BETWEEN до \'2026-02-28\' означает полночь 28-го: всё, что позже 00:00 28 февраля, потеряется. Полуинтервал надёжен.' },
+  { t: 'WHERE и NULL', q: 'Чем NULL отличается от пустой строки \'\' (в большинстве СУБД)?',
+    o: ['NULL — значения нет, \'\' — есть пустое значение', 'Ничем, это синонимы', '\'\' нельзя хранить в VARCHAR', 'NULL — это строка из нуля символов'], a: 0, e: '\'\' = \'\' → TRUE, а NULL = NULL → UNKNOWN. Исключение — Oracle, где \'\' считается NULL.' },
+
+  // ---- Агрегаты ----
+  { t: 'Агрегаты', q: 'Что вернёт запрос?', code: 'SELECT COUNT(*), COUNT(age) FROM users;',
+    o: ['5, 4', '5, 5', '4, 4', '4, 5'], a: 0, e: 'COUNT(*) считает строки, COUNT(age) — только не-NULL значения (у Веры NULL).' },
+  { t: 'Агрегаты', q: 'Что вернёт запрос?', code: 'SELECT AVG(age) FROM users;',
+    o: ['31', '24.8', 'NULL', '28'], a: 0, e: 'AVG пропускает NULL: (28 + 35 + 42 + 19) / 4 = 124 / 4 = 31.' },
+  { t: 'Агрегаты', q: 'Что вернёт запрос?', code: "SELECT SUM(amount) FROM orders WHERE status = 'refunded';",
+    o: ['NULL', '0', '0 строк', 'Ошибку'], a: 0, e: 'Подходящих строк нет; агрегат без GROUP BY всё равно возвращает одну строку, а SUM пустого набора — NULL.' },
+  { t: 'Агрегаты', q: 'Что вернёт запрос?', code: 'SELECT COUNT(DISTINCT city) FROM users;',
+    o: ['3', '4', '5', '2'], a: 0, e: 'Москва, СПб, Казань. NULL в COUNT(DISTINCT ...) не считается.' },
+  { t: 'Агрегаты', q: 'Сколько строк вернёт запрос?', code: 'SELECT status, COUNT(*) FROM orders GROUP BY status;',
+    o: ['3', '6', '1', '4'], a: 0, e: 'Три группы: paid (4), new (1), cancelled (1).' },
+  { t: 'Агрегаты', q: 'Какие user_id вернёт запрос?', code: "SELECT user_id FROM orders\nWHERE status = 'paid'\nGROUP BY user_id\nHAVING SUM(amount) > 1000;",
+    o: ['1 и 4', 'Только 1', '1, 2 и 4', '1 и 2'], a: 0, e: 'Оплачено: 1 → 2000, 2 → 200, 4 → 1200. Больше 1000 — у 1 и 4.' },
+  { t: 'Агрегаты', q: 'Почему запрос не сработает?', code: 'SELECT user_id FROM orders\nWHERE COUNT(*) > 1\nGROUP BY user_id;',
+    o: ['Агрегаты нельзя писать в WHERE — нужен HAVING', 'WHERE должен идти после GROUP BY', 'COUNT(*) нужно заменить на COUNT(id)', 'Нужен ORDER BY'], a: 0, e: 'WHERE фильтрует строки до группировки, когда агрегатов ещё нет.' },
+  { t: 'Агрегаты', q: 'Что выдаст PostgreSQL на этот запрос?', code: 'SELECT status, amount, COUNT(*)\nFROM orders GROUP BY status;',
+    o: ['Ошибку: amount должен быть в GROUP BY или в агрегате', 'Случайный amount из каждой группы', 'Максимальный amount в группе', 'Все amount через запятую'], a: 0, e: 'В группе paid четыре разных amount — неясно, какой показать. MySQL (без ONLY_FULL_GROUP_BY) и SQLite вернут произвольный — тихий баг.' },
+  { t: 'Агрегаты', q: 'Что вернёт запрос?', code: "SELECT SUM(CASE WHEN status = 'paid' THEN 1 ELSE 0 END) FROM orders;",
+    o: ['4', '6', '3400', '1'], a: 0, e: 'Условная агрегация: каждая оплаченная строка даёт 1. Оплачено 4 заказа.' },
+  { t: 'Агрегаты', q: 'Какой запрос найдёт повторяющиеся email?',
+    o: ['SELECT email FROM users GROUP BY email HAVING COUNT(*) > 1', 'SELECT DISTINCT email FROM users', 'SELECT email FROM users WHERE COUNT(email) > 1', 'SELECT email, COUNT(*) FROM users'], a: 0, e: 'Группируем по email и оставляем группы больше одной строки. DISTINCT, наоборот, прячет дубли.' },
+  { t: 'Агрегаты', q: 'Что вернёт запрос?', code: 'SELECT city, COUNT(*) FROM users\nWHERE city IS NULL GROUP BY city;',
+    o: ['Одну строку: NULL | 1', '0 строк', 'Ошибку', 'Одну строку: NULL | 0'], a: 0, e: 'NULL-значения объединяются в одну группу; у Дины city = NULL.' },
+
+  // ---- JOIN ----
+  { t: 'JOIN', q: 'Сколько строк вернёт запрос?', code: 'SELECT u.name, o.id\nFROM users u\nJOIN orders o ON o.user_id = u.id;',
+    o: ['6', '5', '8', '30'], a: 0, e: 'INNER JOIN — только пары: по строке на каждый из 6 заказов. Вера и Дина пропадают.' },
+  { t: 'JOIN', q: 'Сколько строк вернёт запрос?', code: 'SELECT u.name, o.id\nFROM users u\nLEFT JOIN orders o ON o.user_id = u.id;',
+    o: ['8', '6', '5', '11'], a: 0, e: '6 строк с заказами + Вера и Дина с NULL вместо заказа.' },
+  { t: 'JOIN', q: 'Сколько строк вернёт запрос?', code: 'SELECT * FROM users CROSS JOIN orders;',
+    o: ['30', '11', '6', '5'], a: 0, e: 'Декартово произведение: 5 × 6.' },
+  { t: 'JOIN', q: 'Кого вернёт запрос?', code: 'SELECT u.name FROM users u\nLEFT JOIN orders o ON o.user_id = u.id\nWHERE o.id IS NULL;',
+    o: ['Вера, Дина', 'Никого', 'Всех пользователей', 'Анна, Борис, Глеб'], a: 0, e: 'Анти-соединение: оставляем строки, для которых пары справа не нашлось.' },
+  { t: 'JOIN', q: 'Сколько строк вернёт запрос?', code: "SELECT u.name, o.amount FROM users u\nLEFT JOIN orders o ON o.user_id = u.id\nWHERE o.status = 'paid';",
+    o: ['4', '6', '5', '8'], a: 0, e: 'Условие на правую таблицу в WHERE отсеяло строки с NULL — LEFT JOIN превратился в INNER. Остались 4 оплаченных заказа.' },
+  { t: 'JOIN', q: 'Сколько строк вернёт запрос?', code: "SELECT u.name, o.amount FROM users u\nLEFT JOIN orders o ON o.user_id = u.id AND o.status = 'paid';",
+    o: ['6', '4', '8', '5'], a: 0, e: 'Условие в ON: 4 оплаченных заказа (Анна ×2, Борис, Глеб) + Вера и Дина с NULL. Все пользователи сохранены.' },
+  { t: 'JOIN', q: 'Что вернёт запрос для Веры?', code: "SELECT u.name, COUNT(*) FROM users u\nLEFT JOIN orders o ON o.user_id = u.id\nWHERE u.name = 'Вера'\nGROUP BY u.name;",
+    o: ['Вера | 1', 'Вера | 0', 'Вера | NULL', '0 строк'], a: 0, e: 'Строка с NULL-ами из LEFT JOIN — всё равно строка. Чтобы получить 0, считают COUNT(o.id).' },
+  { t: 'JOIN', q: 'Что вернёт запрос?', code: 'SELECT a.name, b.name\nFROM users a JOIN users b\n  ON a.city = b.city AND a.id < b.id;',
+    o: ['Анна | Вера', 'Анна | Анна, Вера | Вера', 'Анна | Вера, Вера | Анна', '0 строк'], a: 0, e: 'Self join: в одном городе только Анна и Вера (Москва). a.id < b.id убирает зеркальную пару и пары «сам с собой».' },
+  { t: 'JOIN', q: 'У пользователя 2 заказа и 3 адреса. Сколько строк даст users JOIN orders JOIN addresses для него?',
+    o: ['6', '5', '3', '2'], a: 0, e: 'Две связи «один ко многим» перемножаются: 2 × 3. SUM(amount) по такому результату завысится втрое.' },
+  { t: 'JOIN', q: 'Что вернёт запрос?', code: "SELECT user_id FROM orders WHERE status = 'paid'\nUNION\nSELECT user_id FROM orders WHERE status = 'new';",
+    o: ['1, 2, 4 (3 строки)', '1, 1, 4, 2, 2 (5 строк)', '2 (1 строку)', '1, 4 (2 строки)'], a: 0, e: 'UNION удаляет дубли. С UNION ALL было бы 5 строк.' },
+  { t: 'JOIN', q: 'Что вернёт запрос?', code: 'SELECT id FROM users\nEXCEPT\nSELECT user_id FROM orders;',
+    o: ['3, 5', '1, 2, 4', 'Пусто', '1, 2, 3, 4, 5'], a: 0, e: 'id пользователей, которых нет среди user_id заказов, — Вера и Дина.' },
+  { t: 'JOIN', q: 'Какого JOIN нет в MySQL?',
+    o: ['FULL OUTER JOIN', 'LEFT JOIN', 'CROSS JOIN', 'RIGHT JOIN'], a: 0, e: 'В MySQL FULL JOIN эмулируют через UNION двух LEFT JOIN.' },
+
+  // ---- Подзапросы и окна ----
+  { t: 'Подзапросы и окна', q: 'Какие заказы вернёт запрос?', code: 'SELECT id FROM orders\nWHERE amount > (SELECT AVG(amount) FROM orders);',
+    o: ['2, 5', '2', '1, 2, 3, 5', '3, 5'], a: 0, e: 'Среднее = 4400 / 6 ≈ 733.33. Больше — 1500 (id 2) и 1200 (id 5).' },
+  { t: 'Подзапросы и окна', q: 'Кого вернёт запрос?', code: "SELECT u.name FROM users u\nWHERE EXISTS (\n  SELECT 1 FROM orders o\n  WHERE o.user_id = u.id AND o.status = 'cancelled');",
+    o: ['Глеб', 'Глеб, Борис', 'Никого', 'Всех'], a: 0, e: 'Отменённый заказ (id 4) есть только у Глеба.' },
+  { t: 'Подзапросы и окна', q: 'В orders появился заказ гостя с user_id = NULL. Что станет с запросом?', code: 'SELECT name FROM users\nWHERE id NOT IN (SELECT user_id FROM orders);',
+    o: ['Вернёт 0 строк', 'Вернёт Веру и Дину, как раньше', 'Вернёт всех пользователей', 'Выдаст ошибку'], a: 0, e: 'NULL в списке NOT IN делает условие UNKNOWN для всех строк. NOT EXISTS от этого не страдает.' },
+  { t: 'Подзапросы и окна', q: 'Что будет, если скалярный подзапрос вернёт несколько строк?',
+    o: ['Ошибка выполнения (в PostgreSQL)', 'Возьмётся первая строка', 'Вернётся NULL', 'Вернётся сумма'], a: 0, e: '«more than one row returned by a subquery». SQLite тихо берёт первую строку — ещё один повод не полагаться на это.' },
+  { t: 'Подзапросы и окна', q: 'Что вернёт запрос?', code: 'SELECT AVG(total) FROM (\n  SELECT user_id, SUM(amount) AS total\n  FROM orders GROUP BY user_id\n) t;',
+    o: ['≈ 1466.67', '≈ 733.33', '4400', '1500'], a: 0, e: 'Суммы по пользователям: 2000, 900, 1500. Среднее = 4400 / 3.' },
+  { t: 'Подзапросы и окна', q: 'Что вернёт рекурсивная CTE?', code: 'WITH RECURSIVE n(x) AS (\n  SELECT 1\n  UNION ALL\n  SELECT x + 1 FROM n WHERE x < 3\n)\nSELECT SUM(x) FROM n;',
+    o: ['6', '3', '1', 'Бесконечный цикл'], a: 0, e: 'Генерируются 1, 2, 3 (на x = 3 условие x < 3 ложно). Сумма — 6.' },
+  { t: 'Подзапросы и окна', q: 'Что вернёт запрос для заказа id = 1?', code: 'SELECT id, SUM(amount) OVER (PARTITION BY user_id) AS s\nFROM orders WHERE id = 1;',
+    o: ['1 | 500', '1 | 2000', '1 | 4400', 'Ошибку'], a: 0, e: 'Окно считается после WHERE: в выборке осталась одна строка, и сумма по окну — 500.' },
+  { t: 'Подзапросы и окна', q: 'Что вернёт запрос (заказы Анны: 500 и 1500)?', code: 'SELECT id, SUM(amount) OVER (PARTITION BY user_id) AS s\nFROM orders WHERE user_id = 1 ORDER BY id;',
+    o: ['1 | 2000, 2 | 2000', '1 | 500, 2 | 2000', '1 | 2000 (одна строка)', '1 | 500, 2 | 1500'], a: 0, e: 'Оконная функция не схлопывает строки: каждая получает сумму по своему окну.' },
+  { t: 'Подзапросы и окна', q: 'Баллы: 100, 90, 90, 80. Какие значения даст RANK() OVER (ORDER BY score DESC)?',
+    o: ['1, 2, 2, 4', '1, 2, 2, 3', '1, 2, 3, 4', '1, 1, 2, 3'], a: 0, e: 'RANK даёт равным одно место и пропускает следующие. DENSE_RANK дал бы 1, 2, 2, 3.' },
+  { t: 'Подзапросы и окна', q: 'Что вернёт запрос?', code: 'SELECT amount, LAG(amount) OVER (ORDER BY created_at)\nFROM orders ORDER BY created_at LIMIT 2;',
+    o: ['500 | NULL, 1500 | 500', '500 | 1500, 1500 | 700', '500 | 0, 1500 | 500', '500 | 500, 1500 | 1500'], a: 0, e: 'LAG берёт значение из предыдущей строки окна. У первой предыдущей нет — NULL.' },
+  { t: 'Подзапросы и окна', q: 'Последнее значение running в запросе?', code: 'SELECT SUM(amount) OVER (ORDER BY created_at) AS running\nFROM orders ORDER BY created_at;',
+    o: ['4400', '200', '1500', '733.33'], a: 0, e: 'С ORDER BY в окне SUM — накопительный итог; на последней строке он равен общей сумме.' },
+  { t: 'Подзапросы и окна', q: 'Почему нельзя написать `WHERE ROW_NUMBER() OVER (...) = 1`?',
+    o: ['Оконные функции вычисляются на шаге SELECT, после WHERE', 'ROW_NUMBER нельзя сравнивать с числом', 'Нужно писать HAVING ROW_NUMBER() = 1', 'Можно, это корректный запрос'], a: 0, e: 'Оборачивают в подзапрос или CTE и фильтруют снаружи: WHERE rn = 1.' },
+
+  // ---- Изменение и структура ----
+  { t: 'Изменение и структура', q: 'Что произойдёт?', code: "UPDATE orders SET status = 'cancelled';",
+    o: ['Будут отменены все 6 заказов', 'Ошибка: нет WHERE', 'Изменится первая строка', 'Ничего, нужен COMMIT'], a: 0, e: 'UPDATE без WHERE меняет всю таблицу. В режиме autocommit — сразу и безвозвратно.' },
+  { t: 'Изменение и структура', q: 'Чем TRUNCATE отличается от DELETE без WHERE?',
+    o: ['Быстрее, не вызывает триггеры удаления, обычно сбрасывает автоинкремент', 'Удаляет таблицу вместе со структурой', 'Удаляет только строки с NULL', 'Ничем'], a: 0, e: 'TRUNCATE — DDL-операция: очищает таблицу целиком, не перебирая строки. Структура остаётся.' },
+  { t: 'Изменение и структура', q: 'Что произойдёт? (orders.user_id — внешний ключ на users.id без CASCADE)', code: 'INSERT INTO orders (user_id, amount, status, created_at)\nVALUES (99, 100, \'new\', \'2026-04-01\');',
+    o: ['Ошибка: нарушение внешнего ключа', 'Создастся пользователь 99', 'Заказ вставится с user_id = NULL', 'Вставится без ошибок'], a: 0, e: 'Пользователя 99 нет — FK не даёт создать «сироту». (В SQLite FK проверяются, только если включить PRAGMA foreign_keys = ON.)' },
+  { t: 'Изменение и структура', q: 'Чем PRIMARY KEY отличается от UNIQUE?',
+    o: ['PK один на таблицу и не допускает NULL; UNIQUE может быть несколько и обычно допускает NULL', 'Ничем, это синонимы', 'UNIQUE быстрее работает', 'PK допускает дубли, если они NULL'], a: 0, e: 'PK — идентификатор строки. UNIQUE — просто запрет повторов.' },
+  { t: 'Изменение и структура', q: 'Какое правило FK удалит заказы вместе с пользователем?',
+    o: ['ON DELETE CASCADE', 'ON DELETE SET NULL', 'ON DELETE RESTRICT', 'ON UPDATE CASCADE'], a: 0, e: 'SET NULL обнулит ссылку, RESTRICT запретит удаление пользователя, пока есть заказы.' },
+  { t: 'Изменение и структура', q: 'Какой тип выбрать для суммы денег?',
+    o: ['NUMERIC(12, 2)', 'FLOAT', 'VARCHAR(20)', 'REAL'], a: 0, e: 'FLOAT и REAL — приблизительные: 0.1 + 0.2 ≠ 0.3. Строка не даст считать и сортировать.' },
+  { t: 'Изменение и структура', q: 'Как реализуется связь «многие ко многим» (заказы — товары)?',
+    o: ['Связующей таблицей с двумя внешними ключами', 'Внешним ключом в таблице заказов', 'Списком id товаров через запятую в столбце', 'Двумя внешними ключами друг на друга'], a: 0, e: 'Например, order_items(order_id, product_id, qty). Список через запятую нарушает 1НФ.' },
+  { t: 'Изменение и структура', q: 'В столбце `phones` хранится "111, 222". Какая нормальная форма нарушена?',
+    o: ['1НФ', '2НФ', '3НФ', 'Никакая'], a: 0, e: '1НФ требует атомарных значений: одна ячейка — одно значение.' },
+  { t: 'Изменение и структура', q: 'Что вернёт `INSERT INTO users (name) VALUES (\'Ия\') RETURNING id;` в PostgreSQL?',
+    o: ['id только что созданной строки', 'Число вставленных строк', 'Все id таблицы', 'Ошибку'], a: 0, e: 'RETURNING возвращает значения вставленных строк — удобно для автотестов.' },
+
+  // ---- Индексы и транзакции ----
+  { t: 'Индексы и транзакции', q: 'Какое утверждение про индексы верно?',
+    o: ['Ускоряют поиск, но замедляют INSERT/UPDATE/DELETE', 'Ускоряют и чтение, и запись', 'Нужны только для PRIMARY KEY', 'Занимают место только в памяти'], a: 0, e: 'При каждом изменении данных индекс тоже обновляется.' },
+  { t: 'Индексы и транзакции', q: 'Есть индекс по created_at. Какое условие, скорее всего, НЕ сможет его использовать?',
+    o: ["WHERE EXTRACT(YEAR FROM created_at) = 2026", "WHERE created_at >= '2026-01-01'", "WHERE created_at BETWEEN '2026-01-01' AND '2026-02-01'", "ORDER BY created_at"], a: 0, e: 'Функция над столбцом мешает обычному индексу. Переписывают в диапазон.' },
+  { t: 'Индексы и транзакции', q: 'Есть составной индекс (user_id, created_at). Какой фильтр им плохо пользуется?',
+    o: ["WHERE created_at > '2026-03-01'", 'WHERE user_id = 1', "WHERE user_id = 1 AND created_at > '2026-03-01'", 'WHERE user_id IN (1, 2)'], a: 0, e: 'Правило левого префикса: индекс отсортирован сначала по user_id.' },
+  { t: 'Индексы и транзакции', q: 'Какой результат после выполнения? (balance был 100)', code: 'BEGIN;\nUPDATE accounts SET balance = 0 WHERE id = 1;\nROLLBACK;\nSELECT balance FROM accounts WHERE id = 1;',
+    o: ['100', '0', 'NULL', 'Ошибка'], a: 0, e: 'ROLLBACK отменил все изменения с момента BEGIN.' },
+  { t: 'Индексы и транзакции', q: 'Какое свойство ACID гарантирует «всё или ничего»?',
+    o: ['Atomicity', 'Consistency', 'Isolation', 'Durability'], a: 0, e: 'Атомарность: либо выполнены все операции транзакции, либо ни одна.' },
+  { t: 'Индексы и транзакции', q: 'Какое свойство ACID гарантирует, что данные не пропадут после COMMIT при отключении питания?',
+    o: ['Durability', 'Atomicity', 'Isolation', 'Consistency'], a: 0, e: 'Долговечность: зафиксированное записано в журнал на диск.' },
+  { t: 'Индексы и транзакции', q: 'Транзакция прочитала незафиксированные изменения другой, а та откатилась. Как называется аномалия?',
+    o: ['Грязное чтение', 'Фантомное чтение', 'Неповторяющееся чтение', 'Взаимоблокировка'], a: 0, e: 'Dirty read возможно только на уровне READ UNCOMMITTED.' },
+  { t: 'Индексы и транзакции', q: 'Какой уровень изоляции по умолчанию в PostgreSQL?',
+    o: ['READ COMMITTED', 'REPEATABLE READ', 'SERIALIZABLE', 'READ UNCOMMITTED'], a: 0, e: 'В MySQL InnoDB по умолчанию — REPEATABLE READ.' },
+  { t: 'Индексы и транзакции', q: 'Два процесса одновременно прочитали баланс 100 и записали 100 + 50. Итог — 150 вместо 200. Как это называется?',
+    o: ['Потерянное обновление', 'Грязное чтение', 'Фантом', 'Deadlock'], a: 0, e: 'Лечится атомарным UPDATE ... SET balance = balance + 50, блокировкой SELECT ... FOR UPDATE или версией строки.' },
+  { t: 'Индексы и транзакции', q: 'Что вернёт выражение в PostgreSQL или SQLite?', code: 'SELECT 7 / 2;',
+    o: ['3', '3.5', '4', 'Ошибку'], a: 0, e: 'Деление целых — целочисленное. Для 3.5 пишут 7 / 2.0 или CAST. В MySQL было бы 3.5.' },
+  { t: 'Индексы и транзакции', q: "Пользователь вводит в поле логина `admin' --`. Чем это опасно при склейке строки запроса?",
+    o: ['Остаток запроса с проверкой пароля станет комментарием', 'Удалится пользователь admin', 'Ничем, кавычка экранируется автоматически', 'Запрос выполнится дважды'], a: 0, e: 'SQL-инъекция. Защита — параметризованные запросы, а не ручное экранирование.' },
+];
+
+/* ================= Общие утилиты ================= */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const CFG = (typeof SPRAV_CONFIG !== 'undefined' && SPRAV_CONFIG) || {};
+const STORE_PREFIX = CFG.storeKey || 'sprav';
+const CODE_LANG = CFG.codeLang || 'py';
+const isMob = () => document.body.classList.contains('mobile');
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(STORE_PREFIX + '-' + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(STORE_PREFIX + '-' + k, JSON.stringify(v)); } catch (e) {} },
+};
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+
+/* ================= Подсветка Python ================= */
+const PY_KW = new Set('False None True and as assert async await break class continue def del elif else except finally for from global if import in is lambda nonlocal not or pass raise return try while with yield match case'.split(' '));
+const PY_BI = new Set('print len range enumerate zip map filter sorted reversed sum min max abs round divmod pow any all isinstance issubclass type int float str bool list tuple dict set frozenset input open ord chr bin hex oct id hash dir help getattr setattr hasattr callable iter next super object property staticmethod classmethod Exception ValueError TypeError KeyError IndexError ZeroDivisionError AttributeError NameError StopIteration RecursionError FileNotFoundError'.split(' '));
+const PY_RE = /(#[^\n]*)|((?:\b[rRbBfFuU]{1,2})?(?:"""[\s\S]*?"""|'''[\s\S]*?'''|"(?:\\.|[^"\\\n])*"|'(?:\\.|[^'\\\n])*'))|(@[A-Za-z_][\w.]*)|(\b\d[\d_]*(?:\.\d+)?(?:[eE][+-]?\d+)?j?\b)|([A-Za-z_]\w*)/g;
+
+function highlightPy(code) {
+  let out = '', last = 0, m, prev = '';
+  PY_RE.lastIndex = 0;
+  while ((m = PY_RE.exec(code))) {
+    out += esc(code.slice(last, m.index));
+    last = m.index + m[0].length;
+    const t = esc(m[0]);
+    if (m[1]) out += `<span class="hl-com">${t}</span>`;
+    else if (m[2]) out += `<span class="hl-str">${t}</span>`;
+    else if (m[3]) out += `<span class="hl-dec">${t}</span>`;
+    else if (m[4]) out += `<span class="hl-num">${t}</span>`;
+    else {
+      const w = m[0];
+      if (prev === 'def' || prev === 'class') out += `<span class="hl-fn">${t}</span>`;
+      else if (PY_KW.has(w)) out += `<span class="hl-kw">${t}</span>`;
+      else if (w === 'self' || w === 'cls') out += `<span class="hl-self">${t}</span>`;
+      else if (PY_BI.has(w) && code[last] === '(') out += `<span class="hl-bi">${t}</span>`;
+      else out += t;
+      prev = w;
+      continue;
+    }
+    prev = '';
+  }
+  return out + esc(code.slice(last));
+}
+function highlightSh(code) {
+  return code.split('\n').map(line => {
+    const i = line.indexOf('#');
+    return i < 0 ? esc(line) : esc(line.slice(0, i)) + `<span class="hl-com">${esc(line.slice(i))}</span>`;
+  }).join('\n');
+}
+
+/* Универсальная подсветка для других языков (JS, SQL, Java, Go, C#…): комментарии, строки, числа, ключевые слова */
+const GEN_KW = new Set(('select from where insert into update delete set values create alter drop table index view join inner left right full outer cross on '
+  + 'group order by having limit offset as and or not null is in like between distinct union all exists case when then else end primary foreign key references '
+  + 'default unique check begin commit rollback transaction grant revoke with asc desc count sum avg min max '
+  + 'function return if for while do switch break continue const let var class new this super extends implements interface public private protected static '
+  + 'final void int long double float boolean bool string char true false import export package try catch finally throw throws async await yield typeof instanceof '
+  + 'func go defer struct type map range chan select fn mut impl pub use match enum').split(' '));
+const GEN_RE = /(\/\/[^\n]*|\/\*[\s\S]*?\*\/|#[^\n]*|--[^\n]*)|("(?:\\.|[^"\\\n])*"|'(?:\\.|[^'\\\n])*'|`[^`]*`)|(\b\d+(?:\.\d+)?\b)|([A-Za-z_]\w*)/g;
+function highlightGeneric(code) {
+  let out = '', last = 0, m;
+  GEN_RE.lastIndex = 0;
+  while ((m = GEN_RE.exec(code))) {
+    out += esc(code.slice(last, m.index));
+    last = m.index + m[0].length;
+    if (m[4]) { out += GEN_KW.has(m[4].toLowerCase()) ? `<span class="hl-kw">${esc(m[4])}</span>` : esc(m[4]); continue; }
+    const cls = m[1] ? 'hl-com' : m[2] ? 'hl-str' : 'hl-num';
+    out += `<span class="${cls}">${esc(m[0])}</span>`;
+  }
+  return out + esc(code.slice(last));
+}
+/* lang: py | sh | plain | любой другой → универсальная подсветка */
+function highlight(code, lang) {
+  lang = lang || CODE_LANG;
+  if (lang === 'py' || lang === 'python') return highlightPy(code);
+  if (lang === 'sh' || lang === 'bash' || lang === 'text') return highlightSh(code);
+  if (lang === 'plain') return esc(code);
+  return highlightGeneric(code);
+}
+
+/* Мини-разметка для карточек и теста: `код`, ```lang\nблок``` */
+function fmt(text) {
+  const parts = String(text).split(/```([A-Za-z]*)\n?([\s\S]*?)```/);
+  let html = '';
+  for (let i = 0; i < parts.length; i += 3) {
+    html += esc(parts[i]).replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\n/g, '<br>');
+    if (i + 2 < parts.length) html += `<pre class="code">${highlight(parts[i + 2].replace(/\n$/, ''), parts[i + 1] || undefined)}</pre>`;
+  }
+  return html;
+}
+
+function addCopyButtons(root) {
+  $$('pre', root).forEach(pre => {
+    if (pre.querySelector('.copy-btn') || pre.closest('#tip')) return;
+    const b = document.createElement('button');
+    b.className = 'copy-btn'; b.type = 'button'; b.textContent = 'Копировать';
+    b.addEventListener('click', e => {
+      e.stopPropagation();
+      const text = pre.innerText.replace(/Копировать$|Скопировано ✓$/, '').trimEnd();
+      (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject()).then(
+        () => { b.textContent = 'Скопировано ✓'; setTimeout(() => b.textContent = 'Копировать', 1400); },
+        () => { b.textContent = 'Не удалось'; });
+    });
+    pre.appendChild(b);
+  });
+}
+
+/* ================= Тема ================= */
+(function () {
+  const root = document.documentElement;
+  function applyTheme(theme) {
+    root.setAttribute('data-theme', theme);
+    const dark = theme === 'dark';
+    $('#themeIcon').textContent = dark ? '☀️' : '🌙';
+    $('#themeLabel').textContent = dark ? 'Светлая тема' : 'Тёмная тема';
+    const meta = $('meta[name="theme-color"]');
+    if (meta) meta.content = dark ? '#0f141b' : '#f7f8fa';
+    store.set('theme', theme);
+  }
+  applyTheme(store.get('theme', null) || (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
+  $('#themeBtn').addEventListener('click', () => applyTheme(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'));
+})();
+
+/* ================= Вкладки ================= */
+const views = {};
+function showView(name, opts = {}) {
+  if (!$('#view-' + name)) name = 'ref';
+  $$('.tab').forEach(t => t.classList.toggle('active', t.dataset.view === name));
+  $$('.view').forEach(v => v.classList.toggle('active', v.id === 'view-' + name));
+  store.set('view', name);
+  if (location.hash !== '#' + name) history.replaceState(null, '', '#' + name);
+  if (views[name] && views[name].onShow) views[name].onShow();
+  if (!opts.keepScroll) window.scrollTo(0, 0);
+  hideTip();
+}
+$$('.tab').forEach(t => t.addEventListener('click', () => showView(t.dataset.view)));
+
+/* ================= Подсказки (термины) ================= */
+const TERMS = GLOSSARY.map((e, i) => ({ ...e, i }));
+const TERM_RE = (function () {
+  const escRe = s => s.replace(/[.*+?^${}()|[\]\\\/]/g, '\\$&');
+  const sorted = [...TERMS].sort((a, b) => b.k.length - a.k.length);
+  const B = 'A-Za-zА-Яа-яЁё0-9_';
+  const parts = sorted.map(e => `(?<g${e.i}>${e.re || escRe(e.k)})`);
+  return new RegExp(`(?<![${B}])(?:${parts.join('|')})(?![${B}])`, 'g');
+})();
+const SKIP = 'script, style, abbr, pre, .badge, summary, #tip, input, button, h1, .tabs, .toc, th, .chips, .qz-opt, #view-gloss, .copy-btn';
+const seenByScope = new WeakMap();
+
+function markTerms(root) {
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+    acceptNode(n) {
+      if (!n.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+      if (n.parentElement.closest(SKIP)) return NodeFilter.FILTER_REJECT;
+      return NodeFilter.FILTER_ACCEPT;
+    }
+  });
+  const nodes = [];
+  while (walker.nextNode()) nodes.push(walker.currentNode);
+  nodes.forEach(node => {
+    const text = node.nodeValue;
+    TERM_RE.lastIndex = 0;
+    if (!TERM_RE.test(text)) return;
+    // каждый термин подсвечиваем один раз на ближайший блок, чтобы не рябило
+    const scope = node.parentElement.closest('.section-body, .fc-face, .qz-ex, .qz-mist, .qz-qwrap') || root;
+    let seen = seenByScope.get(scope);
+    if (!seen) { seen = new Set(); seenByScope.set(scope, seen); }
+    TERM_RE.lastIndex = 0;
+    const frag = document.createDocumentFragment();
+    let last = 0, m, changed = false;
+    while ((m = TERM_RE.exec(text))) {
+      const gi = Object.keys(m.groups).find(k => m.groups[k] !== undefined);
+      const idx = +gi.slice(1);
+      if (seen.has(idx)) continue;
+      seen.add(idx);
+      changed = true;
+      if (m.index > last) frag.appendChild(document.createTextNode(text.slice(last, m.index)));
+      const a = document.createElement('abbr');
+      a.className = 't'; a.tabIndex = 0; a.dataset.idx = idx; a.textContent = m[0];
+      frag.appendChild(a);
+      last = m.index + m[0].length;
+    }
+    if (!changed) return;
+    if (last < text.length) frag.appendChild(document.createTextNode(text.slice(last)));
+    node.parentNode.replaceChild(frag, node);
+  });
+}
+
+const tip = $('#tip');
+let tipFor = null;
+function showTip(el) {
+  const d = TERMS[+el.dataset.idx];
+  if (!d) return;
+  tipFor = el;
+  tip.innerHTML = `<div class="tip-full"><span class="tip-term">${esc(d.k)}</span> · ${esc(d.t)}</div>`
+    + `<div class="tip-why">${esc(d.d)}</div>`
+    + (d.ex ? `<pre>${highlight(d.ex, d.lang)}</pre>` : '');
+  tip.classList.add('show');
+  tip.style.left = tip.style.top = '';
+  if (isMob()) return; // позиция задаётся CSS — шторка снизу
+  const r = el.getBoundingClientRect();
+  const tw = tip.offsetWidth, th = tip.offsetHeight, pad = 8;
+  let left = Math.max(pad, Math.min(r.left + r.width / 2 - tw / 2, window.innerWidth - tw - pad));
+  let top = r.bottom + 8;
+  if (top + th > window.innerHeight - pad) top = r.top - th - 8;
+  tip.style.left = left + 'px';
+  tip.style.top = Math.max(pad, top) + 'px';
+}
+function hideTip() { tip.classList.remove('show'); tipFor = null; }
+const HOVER_MQ = window.matchMedia ? matchMedia('(hover: hover)') : { matches: false };
+const canHover = () => HOVER_MQ.matches && !isMob();
+document.addEventListener('mouseover', e => { if (!canHover()) return; const a = e.target.closest('abbr.t'); if (a) showTip(a); });
+document.addEventListener('mouseout', e => { if (!canHover()) return; const a = e.target.closest('abbr.t'); if (a && !a.contains(e.relatedTarget)) hideTip(); });
+document.addEventListener('focusin', e => { if (e.target.matches('abbr.t')) showTip(e.target); });
+document.addEventListener('focusout', e => { if (e.target.matches('abbr.t') && !isMob()) hideTip(); });
+document.addEventListener('click', e => {
+  const a = e.target.closest('abbr.t');
+  if (a) { e.preventDefault(); if (canHover()) showTip(a); else (tipFor === a ? hideTip() : showTip(a)); }
+  else if (!e.target.closest('#tip') || isMob()) hideTip();
+});
+window.addEventListener('scroll', () => { if (!isMob()) hideTip(); }, { passive: true });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') hideTip(); });
+
+/* ================= Справочник ================= */
+(function () {
+  const content = $('#refContent');
+  $$('pre.py', content).forEach(p => p.innerHTML = highlightPy(p.textContent));
+  $$('pre.sh', content).forEach(p => p.innerHTML = highlightSh(p.textContent));
+  $$('pre.code', content).forEach(p => p.innerHTML = highlight(p.textContent, p.dataset.lang));
+  addCopyButtons(content);
+  markTerms(content);
+
+  const tops = $$(':scope > details.section', content);
+  const toc = $('#toc');
+  tops.forEach(d => {
+    const s = d.querySelector(':scope > summary').cloneNode(true);
+    s.querySelectorAll('.badge, .chev').forEach(x => x.remove());
+    const a = document.createElement('a');
+    a.href = '#' + d.id; a.textContent = s.textContent.trim();
+    a.addEventListener('click', e => { e.preventDefault(); d.open = true; d.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+    toc.appendChild(a);
+  });
+
+  $('#expandAll').addEventListener('click', () => $$('details.section', content).forEach(d => d.open = true));
+  $('#collapseAll').addEventListener('click', () => $$('details.section', content).forEach(d => d.open = false));
+
+  // поиск: прячем разделы без совпадений, раскрываем подразделы с совпадениями
+  const initialOpen = new Map($$('details.section', content).map(d => [d, d.open]));
+  const search = $('#refSearch');
+  let tmr;
+  search.addEventListener('input', () => { clearTimeout(tmr); tmr = setTimeout(run, 120); });
+  function run() {
+    const q = search.value.trim().toLowerCase();
+    let any = false;
+    tops.forEach(top => {
+      if (!q) { top.classList.remove('hidden-by-search'); return; }
+      const hit = top.textContent.toLowerCase().includes(q);
+      top.classList.toggle('hidden-by-search', !hit);
+      if (hit) {
+        any = true;
+        top.open = true;
+        $$('details.section', top).forEach(sub => { sub.open = sub.textContent.toLowerCase().includes(q); });
+      }
+    });
+    if (!q) initialOpen.forEach((o, d) => d.open = o);
+    $('#refEmpty').hidden = !q || any;
+  }
+})();
+
+/* ================= Глоссарий ================= */
+(function () {
+  const body = $('#glossBody');
+  [...TERMS].sort((a, b) => a.k.localeCompare(b.k, 'ru', { sensitivity: 'base' })).forEach(e => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${esc(e.k)}</td><td>${esc(e.t)}</td><td>${esc(e.d)}${e.ex ? `<pre>${highlight(e.ex, e.lang)}</pre>` : ''}</td>`;
+    tr.dataset.search = (e.k + ' ' + e.t + ' ' + e.d).toLowerCase();
+    body.appendChild(tr);
+  });
+  $('#glossSearch').addEventListener('input', e => {
+    const q = e.target.value.trim().toLowerCase();
+    body.querySelectorAll('tr').forEach(tr => { tr.style.display = !q || tr.dataset.search.includes(q) ? '' : 'none'; });
+  });
+})();
+
+/* ================= Флипкарты ================= */
+views.cards = (function () {
+  const cats = ['Все', ...new Set(CARDS.map(c => c.c))];
+  const idOf = c => c.c + '|' + c.f;
+  let known = new Set(store.get('known', []));
+  let cat = store.get('fcCat', 'Все');
+  if (!cats.includes(cat)) cat = 'Все';
+  let onlyNew = store.get('fcOnlyNew', false);
+  let reverse = false;
+  let order = CARDS.map((_, i) => i);
+  let deck = [], pos = 0, flipped = false;
+
+  const catsEl = $('#fcCats'), area = $('#fcArea');
+
+  function rebuild(keepCurrent) {
+    const cur = deck[pos];
+    deck = order.filter(i => (cat === 'Все' || CARDS[i].c === cat) && (!onlyNew || !known.has(idOf(CARDS[i]))));
+    if (keepCurrent != null) {
+      const p = deck.indexOf(keepCurrent);
+      pos = p >= 0 ? p : Math.min(pos, Math.max(deck.length - 1, 0));
+    } else if (cur != null && deck.includes(cur)) pos = deck.indexOf(cur);
+    else pos = 0;
+  }
+
+  function renderCats() {
+    catsEl.innerHTML = '';
+    cats.forEach(c => {
+      const total = CARDS.filter(x => c === 'Все' || x.c === c).length;
+      const b = document.createElement('button');
+      b.className = 'chip' + (c === cat ? ' on' : '');
+      b.innerHTML = `${esc(c)}<span class="n">${total}</span>`;
+      b.addEventListener('click', () => { cat = c; store.set('fcCat', c); rebuild(); pos = 0; flipped = false; renderCats(); render(); });
+      catsEl.appendChild(b);
+    });
+    $('#fcOnlyNew').classList.toggle('on', onlyNew);
+    $('#fcReverse').classList.toggle('on', reverse);
+  }
+
+  function stats() {
+    const pool = CARDS.filter(x => cat === 'Все' || x.c === cat);
+    const k = pool.filter(x => known.has(idOf(x))).length;
+    $('#fcPos').textContent = deck.length ? `Карточка ${pos + 1} из ${deck.length}` : 'Карточек нет';
+    $('#fcKnown').textContent = `Выучено ${k} / ${pool.length}`;
+    $('#fcBar').style.width = (pool.length ? k / pool.length * 100 : 0) + '%';
+  }
+
+  function render(animIn) {
+    stats();
+    if (!deck.length) {
+      area.innerHTML = `<div class="panel empty">🎉 Все карточки в этой категории выучены!<div class="center-actions">
+        <button class="btn" id="fcShowAll">Показать все</button><button class="btn primary" id="fcGoQuiz">Пройти тест →</button></div></div>`;
+      $('#fcShowAll').onclick = () => { onlyNew = false; store.set('fcOnlyNew', false); rebuild(); renderCats(); render(); };
+      $('#fcGoQuiz').onclick = () => showView('quiz');
+      return;
+    }
+    const c = CARDS[deck[pos]];
+    const isKnown = known.has(idOf(c));
+    const front = reverse ? c.b : c.f, back = reverse ? c.f : c.b;
+    area.innerHTML = `
+      <div class="fc-stage" id="fcStage">
+        <div class="fc-drag" id="fcDrag">
+          <div class="fc-swipe l">ПОВТОРИТЬ</div><div class="fc-swipe r">ЗНАЮ</div>
+          <div class="fc-card${flipped ? ' flipped' : ''}" id="fcCard" tabindex="0" role="button" aria-label="Перевернуть карточку">
+            <div class="fc-face fc-front">
+              <div class="fc-cat"><span>${esc(c.c)}</span>${isKnown ? '<span class="known-mark">✓ знаю</span>' : ''}</div>
+              <div class="fc-text"><div>${fmt(front)}</div></div>
+              <div class="fc-hint">${isMob() ? 'Нажми, чтобы увидеть ответ · свайп ← → для оценки' : 'Клик или пробел — перевернуть'}</div>
+            </div>
+            <div class="fc-face fc-back">
+              <div class="fc-cat"><span>${reverse ? 'Вопрос' : 'Ответ'}</span>${isKnown ? '<span class="known-mark">✓ знаю</span>' : ''}</div>
+              <div class="fc-text"><div>${fmt(back)}</div></div>
+              <div class="fc-hint">Знаешь? → свайп вправо или «Знаю»</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="fc-actions">
+        <button class="btn fc-prev" id="fcPrev" ${pos === 0 ? 'disabled' : ''}>← Назад</button>
+        <button class="btn bad fc-again" id="fcAgain">✕ Повторить</button>
+        <button class="btn good fc-know" id="fcKnow">✓ Знаю</button>
+        <button class="btn fc-next" id="fcNext" ${pos >= deck.length - 1 ? 'disabled' : ''}>Далее →</button>
+      </div>`;
+    const card = $('#fcCard');
+    markTerms(card);
+    if (animIn) {
+      const drag = $('#fcDrag');
+      drag.style.transform = `translateX(${animIn * 40}px)`; drag.style.opacity = '0';
+      requestAnimationFrame(() => { drag.style.transition = 'transform .22s ease, opacity .22s ease'; drag.style.transform = ''; drag.style.opacity = ''; });
+    }
+    $('#fcPrev').onclick = () => go(-1);
+    $('#fcNext').onclick = () => go(1);
+    $('#fcAgain').onclick = () => rate(false);
+    $('#fcKnow').onclick = () => rate(true);
+    card.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); flip(); } });
+    bindSwipe();
+  }
+
+  function flip() { flipped = !flipped; const c = $('#fcCard'); if (c) c.classList.toggle('flipped', flipped); }
+  function go(d) {
+    const np = pos + d;
+    if (np < 0 || np >= deck.length) return;
+    pos = np; flipped = false; render(d);
+  }
+  function rate(ok, fromSwipe) {
+    if (!deck.length) return;
+    const cur = deck[pos], id = idOf(CARDS[cur]);
+    ok ? known.add(id) : known.delete(id);
+    store.set('known', [...known]);
+    flipped = false;
+    const done = () => {
+      if (onlyNew && ok) { rebuild(cur); deck = deck.filter(i => i !== cur); if (pos >= deck.length) pos = Math.max(0, deck.length - 1); }
+      else if (pos < deck.length - 1) pos++;
+      render(1);
+    };
+    if (fromSwipe) done();
+    else {
+      const drag = $('#fcDrag');
+      drag.style.transition = 'transform .2s ease, opacity .2s ease';
+      drag.style.transform = `translateX(${ok ? 60 : -60}px) rotate(${ok ? 4 : -4}deg)`; drag.style.opacity = '0';
+      setTimeout(done, 180);
+    }
+  }
+
+  function bindSwipe() {
+    const stage = $('#fcStage'), drag = $('#fcDrag'), card = $('#fcCard');
+    const lblL = $('.fc-swipe.l', stage), lblR = $('.fc-swipe.r', stage);
+    let sx = 0, sy = 0, dx = 0, active = false, moved = false, pid = null;
+    stage.addEventListener('pointerdown', e => {
+      if (e.button !== 0 || e.target.closest('abbr.t, .copy-btn, pre')) return;
+      active = true; moved = false; sx = e.clientX; sy = e.clientY; dx = 0; pid = e.pointerId;
+      drag.style.transition = 'none';
+    });
+    stage.addEventListener('pointermove', e => {
+      if (!active || e.pointerId !== pid) return;
+      dx = e.clientX - sx;
+      const dy = e.clientY - sy;
+      if (!moved && Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy)) { moved = true; try { stage.setPointerCapture(pid); } catch (_) {} }
+      if (!moved) return;
+      drag.style.transform = `translateX(${dx}px) rotate(${dx / 22}deg)`;
+      lblR.style.opacity = Math.max(0, Math.min(1, dx / 90));
+      lblL.style.opacity = Math.max(0, Math.min(1, -dx / 90));
+    });
+    const end = e => {
+      if (!active || (e && e.pointerId !== pid)) return;
+      active = false;
+      if (!moved) {
+        if (e && e.type === 'pointerup' && !e.target.closest('abbr.t, .copy-btn')) flip();
+        return;
+      }
+      if (Math.abs(dx) > 90) {
+        const ok = dx > 0;
+        drag.style.transition = 'transform .22s ease, opacity .22s ease';
+        drag.style.transform = `translateX(${ok ? 140 : -140}%) rotate(${ok ? 18 : -18}deg)`;
+        drag.style.opacity = '0';
+        setTimeout(() => rate(ok, true), 200);
+      } else {
+        drag.style.transition = 'transform .25s cubic-bezier(.2,.8,.3,1.2)';
+        drag.style.transform = '';
+        lblL.style.opacity = lblR.style.opacity = 0;
+      }
+    };
+    stage.addEventListener('pointerup', end);
+    stage.addEventListener('pointercancel', e => { moved = true; dx = 0; end(e); });
+    // клик с клавиатуры (Enter) обработан отдельно; блокируем всплытие «клика» на карточке, чтобы не мешать подсказкам
+    card.addEventListener('click', e => { if (!e.target.closest('abbr.t')) e.preventDefault(); });
+  }
+
+  $('#fcOnlyNew').addEventListener('click', () => { onlyNew = !onlyNew; store.set('fcOnlyNew', onlyNew); rebuild(); flipped = false; renderCats(); render(); });
+  $('#fcShuffle').addEventListener('click', () => { order = shuffle(order); rebuild(); pos = 0; flipped = false; render(); });
+  $('#fcReverse').addEventListener('click', () => { reverse = !reverse; flipped = false; renderCats(); render(); });
+  $('#fcReset').addEventListener('click', () => {
+    if (!confirm('Сбросить отметки «знаю» для всех карточек?')) return;
+    known = new Set(); store.set('known', []); rebuild(); pos = 0; flipped = false; render();
+  });
+
+  document.addEventListener('keydown', e => {
+    if (!$('#view-cards').classList.contains('active') || e.target.matches('input, textarea') || e.metaKey || e.ctrlKey || e.altKey) return;
+    if (e.key === ' ' || e.key === 'Enter') { if (e.target.closest('button') && e.target.id !== 'fcCard') return; e.preventDefault(); flip(); }
+    else if (e.key === 'ArrowRight') go(1);
+    else if (e.key === 'ArrowLeft') go(-1);
+    else if (e.key === '1') rate(false);
+    else if (e.key === '2') rate(true);
+  });
+
+  rebuild(); renderCats(); render();
+  window.addEventListener('layoutchange', () => render());
+  return { onShow() {} };
+})();
+
+/* ================= Тест ================= */
+views.quiz = (function () {
+  const area = $('#quizArea');
+  const topics = [...new Set(QUIZ.map(q => q.t))];
+  let selTopics = new Set(store.get('qzTopics', topics).filter(t => topics.includes(t)));
+  if (!selTopics.size) selTopics = new Set(topics);
+  let count = store.get('qzCount', 15);
+  let run = null; // { list, i, answers: [{chosen, ok}] }
+  const LETTERS = ['1', '2', '3', '4', '5'];
+
+  const looksLikeCode = (s, q) => !!q.code || /[\[\]{}()'"=<>_.]|^-?\d/.test(s);
+
+  function setup() {
+    run = null;
+    const pool = QUIZ.filter(q => selTopics.has(q.t)).length;
+    const best = store.get('qzBest', null), hist = store.get('qzHist', []);
+    area.innerHTML = `
+      <div class="panel qz-setup">
+        <div class="row"><h3>Темы</h3><div class="chips" id="qzTopics"></div></div>
+        <div class="row"><h3>Сколько вопросов</h3><div class="chips" id="qzCount"></div></div>
+        <button class="btn primary" id="qzStart" ${pool ? '' : 'disabled'}>Начать тест · ${Math.min(count === 0 ? pool : count, pool)} вопр.</button>
+        <div class="qz-best">${best ? `Лучший результат: <b>${best.pct}%</b> (${best.ok}/${best.n}, ${esc(best.date)})` : 'Результатов пока нет — самое время проверить себя.'}
+        ${hist.length ? `<br>Последние: ${hist.map(h => h.pct + '%').join(' · ')}` : ''}</div>
+      </div>`;
+    const tEl = $('#qzTopics');
+    const mk = (label, on, n, fn) => { const b = document.createElement('button'); b.className = 'chip' + (on ? ' on' : ''); b.innerHTML = esc(label) + (n != null ? `<span class="n">${n}</span>` : ''); b.onclick = fn; return b; };
+    tEl.appendChild(mk('Все темы', selTopics.size === topics.length, QUIZ.length, () => { selTopics = new Set(selTopics.size === topics.length ? [] : topics); save(); setup(); }));
+    topics.forEach(t => tEl.appendChild(mk(t, selTopics.has(t), QUIZ.filter(q => q.t === t).length, () => { selTopics.has(t) ? selTopics.delete(t) : selTopics.add(t); save(); setup(); })));
+    const cEl = $('#qzCount');
+    [10, 15, 25, 0].forEach(n => cEl.appendChild(mk(n ? String(n) : 'Все', count === n, null, () => { count = n; save(); setup(); })));
+    $('#qzStart').onclick = () => start(QUIZ.filter(q => selTopics.has(q.t)), count);
+  }
+  function save() { store.set('qzTopics', [...selTopics]); store.set('qzCount', count); }
+
+  function start(pool, n) {
+    let list = shuffle(pool);
+    if (n) list = list.slice(0, n);
+    run = { list: list.map(q => ({ q, order: shuffle(q.o.map((_, i) => i)) })), i: 0, answers: [] };
+    question();
+  }
+
+  function question() {
+    const { list, i, answers } = run;
+    const { q, order } = list[i];
+    const ok = answers.filter(a => a.ok).length, bad = answers.length - ok;
+    area.innerHTML = `
+      <div class="panel">
+        <div class="qz-head"><span>Вопрос ${i + 1} из ${list.length}</span><span><span class="yes">✓ ${ok}</span> &nbsp; <span class="no">✕ ${bad}</span></span></div>
+        <div class="qz-bar"><i style="width:${i / list.length * 100}%"></i></div>
+        <div class="qz-qwrap">
+          <span class="qz-topic">${esc(q.t)}</span>
+          <p class="qz-q">${fmt(q.q)}</p>
+          ${q.code ? `<pre class="code">${highlight(q.code, q.lang)}</pre>` : ''}
+        </div>
+        <div class="qz-opts">${order.map((oi, k) => `<button class="qz-opt" data-oi="${oi}"><span class="k">${LETTERS[k]}</span><span class="v${looksLikeCode(q.o[oi], q) ? '' : ' plain'}">${esc(q.o[oi])}</span></button>`).join('')}</div>
+        <div id="qzEx"></div>
+        <div class="qz-nav"><button class="btn" id="qzQuit">Завершить</button><button class="btn primary" id="qzNext" hidden>${i === list.length - 1 ? 'Результат' : 'Далее →'}</button></div>
+      </div>`;
+    markTerms($('.qz-qwrap', area));
+    $$('.qz-opt', area).forEach(b => b.onclick = () => answer(+b.dataset.oi));
+    $('#qzNext').onclick = next;
+    $('#qzQuit').onclick = () => { if (!run.answers.length || confirm('Завершить тест и посмотреть результат?')) { run.answers.length ? result() : setup(); } };
+  }
+
+  function answer(oi) {
+    if (run.answers.length > run.i) return;
+    const { q } = run.list[run.i];
+    const ok = oi === q.a;
+    run.answers.push({ chosen: oi, ok });
+    $$('.qz-opt', area).forEach(b => {
+      const v = +b.dataset.oi;
+      b.disabled = true;
+      if (v === q.a) b.classList.add('correct');
+      else if (v === oi) b.classList.add('wrong');
+      else b.classList.add('dim');
+    });
+    const ex = $('#qzEx');
+    ex.innerHTML = `<div class="qz-ex${ok ? '' : ' bad'}"><b>${ok ? '✓ Верно!' : '✕ Неверно. Правильно: ' + esc(q.o[q.a])}</b>${fmt(q.e)}</div>`;
+    markTerms(ex);
+    const nb = $('#qzNext'); nb.hidden = false; nb.focus({ preventScroll: true });
+    if (isMob()) ex.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function next() {
+    if (run.answers.length <= run.i) return;
+    if (run.i < run.list.length - 1) { run.i++; question(); window.scrollTo({ top: 0 }); }
+    else result();
+  }
+
+  function result() {
+    const done = run.list.slice(0, run.answers.length);
+    const n = done.length, ok = run.answers.filter(a => a.ok).length;
+    const pct = n ? Math.round(ok / n * 100) : 0;
+    const msg = pct >= 90 ? '🏆 Отлично! Тема усвоена.' : pct >= 70 ? '👍 Хорошо! Повтори темы с ошибками.' : pct >= 50 ? '📚 Неплохо, но стоит пройтись по флипкартам.' : '🔁 Вернись к справочнику и флипкартам, потом попробуй снова.';
+    const date = new Date().toLocaleDateString('ru-RU');
+    const best = store.get('qzBest', null);
+    if (n >= 5 && (!best || pct > best.pct)) store.set('qzBest', { pct, ok, n, date });
+    store.set('qzHist', [{ pct }, ...store.get('qzHist', [])].slice(0, 5));
+
+    const byTopic = {};
+    done.forEach((it, k) => { const t = it.q.t; byTopic[t] = byTopic[t] || { ok: 0, n: 0 }; byTopic[t].n++; if (run.answers[k].ok) byTopic[t].ok++; });
+    const mistakes = done.map((it, k) => ({ ...it, ans: run.answers[k] })).filter(x => !x.ans.ok);
+
+    area.innerHTML = `
+      <div class="panel">
+        <div class="qz-score"><div class="big" style="color:${pct >= 70 ? 'var(--ok)' : pct >= 50 ? 'var(--orange)' : 'var(--bad)'}">${pct}%</div>
+          <div>${ok} из ${n} правильно</div><div class="msg">${msg}</div></div>
+        <div class="qz-topics">${Object.entries(byTopic).map(([t, s]) => `<div class="r"><span>${esc(t)}</span><div class="bar"><i style="width:${s.ok / s.n * 100}%"></i></div><span>${s.ok}/${s.n}</span></div>`).join('')}</div>
+        <div class="center-actions">
+          ${mistakes.length ? '<button class="btn primary" id="qzRetryWrong">Повторить ошибки (' + mistakes.length + ')</button>' : ''}
+          <button class="btn${mistakes.length ? '' : ' primary'}" id="qzAgain">Пройти ещё раз</button>
+          <button class="btn" id="qzSetup">Настройки</button>
+          <button class="btn" id="qzCards">🃏 Флипкарты</button>
+        </div>
+        ${mistakes.length ? `<div class="qz-mistakes"><h3>Разбор ошибок</h3>${mistakes.map(m => `
+          <div class="qz-mist"><b>${fmt(m.q.q)}</b>${m.q.code ? `<pre class="code">${highlight(m.q.code, m.q.lang)}</pre>` : '<br>'}
+            <span class="your">Твой ответ: ${esc(m.q.o[m.ans.chosen])}</span><br>
+            <span class="right">Правильно: ${esc(m.q.o[m.q.a])}</span><br>${fmt(m.q.e)}</div>`).join('')}</div>` : ''}
+      </div>`;
+    $$('.qz-mist', area).forEach(markTerms);
+    const pool = run.list.map(x => x.q);
+    if (mistakes.length) $('#qzRetryWrong').onclick = () => start(mistakes.map(m => m.q), 0);
+    $('#qzAgain').onclick = () => start(pool, 0);
+    $('#qzSetup').onclick = setup;
+    $('#qzCards').onclick = () => showView('cards');
+    window.scrollTo({ top: 0 });
+  }
+
+  document.addEventListener('keydown', e => {
+    if (!$('#view-quiz').classList.contains('active') || !run || e.target.matches('input') || e.metaKey || e.ctrlKey) return;
+    const k = LETTERS.indexOf(e.key);
+    if (k >= 0) { const b = $$('.qz-opt', area)[k]; if (b && !b.disabled) b.click(); }
+    else if (e.key === 'Enter' && !$('#qzNext')?.hidden) { e.preventDefault(); next(); }
+  });
+
+  setup();
+  return { onShow() {} };
+})();
+
+/* ================= Старт ================= */
+showView((location.hash || '').slice(1) || store.get('view', 'ref'), { keepScroll: true });
+requestAnimationFrame(() => requestAnimationFrame(() => document.documentElement.classList.add('ready')));
+window.addEventListener('hashchange', () => showView(location.hash.slice(1)));
+
+</script>
+</body>
+</html>
